@@ -141,8 +141,8 @@
     let currentBot = "user";
     let conversationRounds = 10;
     const apiKeys = {
-        "qwen2-72b-instruct": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
-        "llama-v3-70b-instruct": "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9"
+        "bot1": "QAwsdCAvRsIaGhoJQvXqfwNkwuDj7D1MyGqldWn07GV068cq",
+        "bot2": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
     };
 
     function generatePrompt(conversation, bot) {
@@ -152,7 +152,8 @@
         return [{ role: "system", content: systemMessage }].concat(conversation);
     }
 
-    async function getAssistantResponse(model, messages, apiKey) {
+    async function getAssistantResponse(model, messages) {
+        const apiKey = apiKeys[model];
         const url = "https://api.fireworks.ai/inference/v1/chat/completions";
         const payload = {
             model: `accounts/fireworks/models/${model}`,
@@ -185,16 +186,10 @@
 
     async function alternateConversation() {
         for (let i = 0; i < conversationRounds; i++) {
+            const bot = currentBot === "bot1" ? "bot1" : "bot2";
             const prompt = generatePrompt(conversationHistory, currentBot);
-            let botResponse;
-            if (currentBot === "user") {
-                botResponse = await getUserResponse();
-                conversationHistory.push({ role: "user", content: botResponse });
-            } else {
-                const apiKey = apiKeys[currentBot];
-                botResponse = await getAssistantResponse(currentBot, prompt, apiKey);
-                conversationHistory.push({ role: "assistant", content: botResponse });
-            }
+            const botResponse = await getAssistantResponse(bot, prompt);
+            conversationHistory.push({ role: "assistant", content: botResponse });
 
             setTimeout(() => {
                 document.getElementById('botResponses').innerHTML +=
@@ -207,13 +202,30 @@
             } else if (currentBot === "bot1") {
                 currentBot = "bot2";
             } else {
-                currentBot = "bot1";
+                currentBot = "user";
             }
         }
     }
 
     async function askQuestion() {
+        const userQuestion = await getUserResponse();
+        conversationHistory.push({ role: "user", content: userQuestion });
         conversationRounds = document.getElementById('rounds').value;
+
+        const promptBot1 = generatePrompt(conversationHistory, "bot1");
+        const bot1Response = await getAssistantResponse("bot1", promptBot1);
+        conversationHistory.push({ role: "assistant", content: bot1Response });
+        document.getElementById('botResponses').innerHTML +=
+            `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+        textToSpeech(bot1Response, 'fa');
+
+        const promptBot2 = generatePrompt(conversationHistory, "bot2");
+        const bot2Response = await getAssistantResponse("bot2", promptBot2);
+        conversationHistory.push({ role: "assistant", content: bot2Response });
+        document.getElementById('botResponses').innerHTML +=
+            `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+        textToSpeech(bot2Response, 'fa');
+
         await alternateConversation();
     }
 

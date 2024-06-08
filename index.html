@@ -101,6 +101,10 @@
         <input type="text" id="question" placeholder="Ask a question...">
         <button onclick="askQuestion()">Ask</button>
     </div>
+    <div>
+        <label for="rounds">Select number of rounds:</label>
+        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
+    </div>
     <div id="botResponses"></div>
 </div>
 <script>
@@ -119,13 +123,19 @@
     }
 
     async function getAssistantResponse(model, messages) {
+        var apiKey;
+        if (model === "accounts/fireworks/models/qwen2-72b-instruct") {
+            apiKey = "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM";
+        } else {
+            apiKey = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
+        }
         var url = "https://api.fireworks.ai/inference/v1/chat/completions";
         var payload = {
             "model": model,
             "messages": messages
         };
         var headers = {
-            "Authorization": "Bearer moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+            "Authorization": "Bearer " + apiKey,
             "Content-Type": "application/json"
         };
         try {
@@ -168,7 +178,7 @@
                     document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
                     textToSpeech(botResponse, 'en');
                 }, (i * 2000) + 2000); // 2-second delay after each response
-                currentBot = "bot1 ";
+                currentBot = "bot1";
             }
         }
     }
@@ -176,6 +186,7 @@
     async function askQuestion() {
         var question = document.getElementById('question').value;
         conversationHistory.push({"role": "user", "content": question});
+        conversationRounds = document.getElementById('rounds').value;
 
         var prompt = generatePrompt(conversationHistory, "bot1");
         var bot1Response = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);

@@ -6,102 +6,102 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 
-body {
-    font-family: 'Orbitron', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #0a0a0a; /* Dark background color */
-    color: #fff; /* Text color */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a; /* Dark background color */
+            color: #fff; /* Text color */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
 
-.top-bar {
-    background-color: #333;
-    color: #ffd700;
-    padding: 20px;
-    text-align: center;
-    width: 100%;
-    font-size: 24px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
+        .top-bar {
+            background-color: #333;
+            color: #ffd700;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            font-size: 24px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
 
-.main-section {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-    width: 90%;
-    border-radius: 10px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #333 #f0f0f0;
-}
+        .main-section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            width: 90%;
+            border-radius: 10px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #333 #f0f0f0;
+        }
 
-.bot-response {
-    margin: 20px 0;
-    padding: 20px;
-    border-radius: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 12px;
-    line-height: 1.8;
-    animation: fadeIn 1s;
-    font-family: Arial, sans-serif; /* Change the font here */
-}
+        .bot-response {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 12px;
+            line-height: 1.8;
+            animation: fadeIn 1s;
+            font-family: Arial, sans-serif; /* Change the font here */
+        }
 
-.bot1-response {
-    background-color: #ff6f61; /* Flat color for User 1 */
-    border: 1px solid #333;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-}
+        .bot1-response {
+            background-color: #ff6f61; /* Flat color for User 1 */
+            border: 1px solid #333;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
 
-.bot2-response {
-    background-color: #5cdb95; /* Flat color for User 2 */
-    border: 1px solid #333;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-}
+        .bot2-response {
+            background-color: #5cdb95; /* Flat color for User 2 */
+            border: 1px solid #333;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
 
-#question {
-    padding: 15px;
-    margin-right: 10px;
-    border: 1px solid #333;
-    border-radius: 10px;
-    width: 70%;
-    box-sizing: border-box;
-    font-size: 18px;
-    color: #000; /* Question text color */
-    background-color: #fff; /* Question background color */
-}
+        #question {
+            padding: 15px;
+            margin-right: 10px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            width: 70%;
+            box-sizing: border-box;
+            font-size: 18px;
+            color: #000; /* Question text color */
+            background-color: #fff; /* Question background color */
+        }
 
-button {
-    padding: 15px;
-    background-color: #333;
-    color: #ffd700;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 18px;
-}
+        button {
+            padding: 15px;
+            background-color: #333;
+            color: #ffd700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
 
-::-webkit-scrollbar {
-    width: 12px;
-}
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
 
-::-webkit-scrollbar-track {
-    background: #f0f0f0;
-}
+        ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
 
-::-webkit-scrollbar-thumb {
-    background-color: #333;
-    border-radius: 20px;
-    border: 3px solid #f0f0f0;
-}
+        ::-webkit-scrollbar-thumb {
+            background-color: #333;
+            border-radius: 20px;
+            border: 3px solid #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -125,13 +125,45 @@ button {
     var currentBot = "bot1";
     var conversationRounds = 10;
 
+    // Language detection function
+    function detectLanguage(text) {
+        var lang = "en"; // Default to English
+        try {
+            lang = detect(text); // Use langdetect to detect language
+        } catch (error) {
+            console.error("Error detecting language:", error);
+        }
+        return lang;
+    }
+
+    async function askQuestion() {
+        var question = document.getElementById('question').value;
+        conversationHistory.push({"role": "user", "content": question});
+        conversationRounds = document.getElementById('rounds').value;
+
+        var lang = detectLanguage(question);
+        var bot1Model = "accounts/fireworks/models/qwen2-72b-instruct";
+        var bot2Model = lang === "fa" ? bot1Model : "accounts/fireworks/models/llama-v3-70b-instruct";
+
+        var prompt = generatePrompt(conversationHistory, "bot1");
+        var bot1Response = await getAssistantResponse(bot1Model, prompt);
+        conversationHistory.push({"role": "assistant", "content": bot1Response});
+        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+        textToSpeech(bot1Response, lang); // Set language parameter for text-to-speech
+
+        conversationHistory.push({"role": "user", "content": bot1Response});
+        prompt = generatePrompt(conversationHistory, "bot2");
+        var bot2Response = await getAssistantResponse(bot2Model, prompt);
+        conversationHistory.push({"role": "assistant", "content": bot2Response});
+        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+        textToSpeech(bot2Response, lang); // Set language parameter for text-to-speech
+
+        alternateConversation();
+    }
+
     function generatePrompt(conversation, bot) {
         var systemMessage;
-        if (bot === "bot1") {
-            systemMessage = "You are a highly intelligent assistant. Provide insightful and informative responses.";
-        } else {
-            systemMessage = "You are a critical thinker assistant. Analyze and respond thoughtfully.";
-        }
+        systemMessage = "You are a highly intelligent assistant. Provide insightful and informative responses.";
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 
@@ -168,53 +200,36 @@ button {
     function textToSpeech(text, lang) {
         var utterance = new SpeechSynthesisUtterance();
         utterance.text = text;
-        utterance.lang = lang;
+        utterance.lang = lang; // Set language parameter for text-to-speech
         speechSynthesis.speak(utterance);
     }
 
     async function alternateConversation() {
         for (var i = 0; i < conversationRounds; i++) {
+            var lang = detectLanguage(conversationHistory[conversationHistory.length - 1].content);
+            var bot1Model = "accounts/fireworks/models/qwen2-72b-instruct";
+            var bot2Model = lang === "fa" ? bot1Model : "accounts/fireworks/models/llama-v3-70b-instruct";
+            
             if (currentBot === "bot1") {
                 var prompt = generatePrompt(conversationHistory, "bot1");
-                var botResponse = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
+                var botResponse = await getAssistantResponse(bot1Model, prompt);
                 conversationHistory.push({"role": "assistant", "content": botResponse});
                 setTimeout(() => {
                     document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${botResponse}</p></div>`;
-                    textToSpeech(botResponse, 'en');
+                    textToSpeech(botResponse, lang);
                 }, (i * 2000) + 2000); // 2-second delay after each response
                 currentBot = "bot2";
             } else {
                 var prompt = generatePrompt(conversationHistory, "bot2");
-                var botResponse = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
+                var botResponse = await getAssistantResponse(bot2Model, prompt);
                 conversationHistory.push({"role": "assistant", "content": botResponse});
                 setTimeout(() => {
                     document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
-                    textToSpeech(botResponse, 'en');
+                    textToSpeech(botResponse, lang);
                 }, (i * 2000) + 2000); // 2-second delay after each response
                 currentBot = "bot1";
             }
         }
-    }
-
-    async function askQuestion() {
-        var question = document.getElementById('question').value;
-        conversationHistory.push({"role": "user", "content": question});
-        conversationRounds = document.getElementById('rounds').value;
-
-        var prompt = generatePrompt(conversationHistory, "bot1");
-        var bot1Response = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
-        conversationHistory.push({"role": "assistant", "content": bot1Response});
-        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-        textToSpeech(bot1Response, 'en');
-
-        conversationHistory.push({"role": "user", "content": bot1Response});
-        prompt = generatePrompt(conversationHistory, "bot2");
-        var bot2Response = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
-        conversationHistory.push({"role": "assistant", "content": bot2Response});
-        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-        textToSpeech(bot2Response, 'en');
-
-        alternateConversation();
     }
 </script>
 </body>

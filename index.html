@@ -217,14 +217,14 @@
         conversationHistory.push({ role: "assistant", content: bot1Response });
         document.getElementById('botResponses').innerHTML +=
             `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-        textToSpeech(bot1Response, 'fa');
+        textToSpeech(bot1Response, 'en');
 
         const promptBot2 = generatePrompt(conversationHistory, "bot2");
         const bot2Response = await getAssistantResponse("bot2", promptBot2);
         conversationHistory.push({ role: "assistant", content: bot2Response });
         document.getElementById('botResponses').innerHTML +=
             `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-        textToSpeech(bot2Response, 'fa');
+        textToSpeech(bot2Response, 'en');
 
         await alternateConversation();
     }

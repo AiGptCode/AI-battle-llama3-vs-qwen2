@@ -4,137 +4,273 @@
     <title>AI Battle Arena</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        /* Your CSS styles here */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #292929;
+            color: #D35400;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .top-bar {
+            background-color: #333;
+            color: #ffd700;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            font-size: 28px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .top-bar h1 {
+            margin: 0;
+        }
+
+        .top-bar img {
+            max-width: 60%;
+            height: auto;
+            display: block;
+            margin: 10px auto 0;
+        }
+
+        .main-section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            border-radius: 10px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #ccc #f0f0f0;
+        }
+
+        .bot-response {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.8;
+            animation: fadeIn 1s;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        .bot1-response {
+            background-color: #ffddc1;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .bot2-response {
+            background-color: #c1ffd7;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #question {
+            padding: 15px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            width: 70%;
+            box-sizing: border-box;
+            font-size: 18px;
+            color: #333;
+            background-color: #fff;
+        }
+
+        button {
+            padding: 15px;
+            background-color: #444;
+            color: #ffd700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .loading-indicator {
+            display: none;
+            font-size: 18px;
+            color: #ffd700;
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 20px;
+            border: 3px solid #f0f0f0;
+        }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <h1>AI Battle</h1>
-        <img src="https://raw.githubusercontent.com/AiGptCode/t/main/IMG_4113.png" alt="AI Battle Logo">
+
+<div class="top-bar">
+    <h1>AI Battle</h1>
+    <img src="https://raw.githubusercontent.com/AiGptCode/t/main/IMG_4113.png" alt="AI Battle Logo">
+</div>
+<div class="description">Welcome to our AI Battle! Ask a question and let our two AI models battle it out.</div>
+<div class="main-section">
+    <div style="display: flex; align-items: center;">
+        <input type="text" id="question" placeholder="Ask a question...">
+        <button onclick="askQuestion()">Ask</button>
     </div>
-    <div class="description">Welcome to our AI Battle! Ask a question and let our two AI models battle it out.</div>
-    <div class="main-section">
-        <div class="input-section">
-            <input type="text" id="question" placeholder="Ask a question...">
-            <button id="ask-button">Ask</button>
-        </div>
-        <div class="settings-section">
-            <label for="rounds">Select number of rounds:</label>
-            <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
-        </div>
-        <div id="botResponses"></div>
-        <div class="loading-indicator" id="loading-indicator">Loading...</div>
+    <div>
+        <label for="rounds">Select number of rounds:</label>
+        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
     </div>
-    <script>
-        const API_URL = "https://api.fireworks.ai/inference/v1/completions";
-        const API_KEYS = {
+    <div id="botResponses"></div>
+    <div class="loading-indicator" id="loading-indicator">Loading...</div>
+</div>
+<script>
+    let conversationHistory = [];
+    let currentBot = "user";
+    let conversationRounds = 10;
+
+    // Function to set the settings for each bot
+    function setBotSettings(botName) {
+        switch (botName) {
+            case "bot1":
+                return {
+                    model: "accounts/fireworks/models/qwen2-72b-instruct",
+                    max_tokens: 8192, // Set maximum tokens to 8192
+                    top_p: 1,
+                    top_k: 40,
+                    presence_penalty: 0,
+                    frequency_penalty: 0,
+                    temperature: 0.6
+                };
+            case "bot2":
+                return {
+                    model: "accounts/fireworks/models/llama-v3-70b-instruct",
+                    max_tokens: 8192, // Set maximum tokens to 8192
+                    top_p: 1,
+                    top_k: 40,
+                    presence_penalty: 0,
+                    frequency_penalty: 0,
+                    temperature: 0.6
+                };
+            default:
+                return null;
+        }
+    }
+
+    // Function to make API call for each bot
+    async function getBotResponse(botName, messages) {
+        const url = "https://api.fireworks.ai/inference/v1/completions";
+        const settings = setBotSettings(botName);
+        const apiKey = getApiKey(botName);
+
+        if (!settings) {
+            console.error("Invalid bot name");
+            return "An error occurred while fetching the response.";
+        }
+
+        const payload = {
+            ...settings,
+            messages: messages
+        };
+
+        const headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            if (!data.choices || !data.choices.length) {
+                throw new Error("No response from API");
+            }
+            return data.choices[0].message.content;
+        } catch (error) {
+            console.error(error);
+            return "An error occurred while fetching the response.";
+        }
+    }
+
+    // Function to set the API key for each bot
+    function getApiKey(botName) {
+        const apiKeys = {
             "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
             "bot2": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
         };
-        const BOT_SETTINGS = {
-            "bot1": {
-                model: "accounts/fireworks/models/qwen2-72b-instruct",
-                max_tokens: 8192,
-                top_p: 1,
-                top_k: 40,
-                presence_penalty: 0,
-                frequency_penalty: 0,
-                temperature: 0.6
-            },
-            "bot2": {
-                model: "accounts/fireworks/models/llama-v3-70b-instruct",
-                max_tokens: 8192,
-                top_p: 1,
-                top_k: 40,
-                presence_penalty: 0,
-                frequency_penalty: 0,
-                temperature: 0.6
+        return apiKeys[botName];
+    }
+
+    function textToSpeech(text, lang) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        speechSynthesis.speak(utterance);
+    }
+
+    async function alternateConversation() {
+        for (let i = 0; i < conversationRounds; i++) {
+            const prompt = generatePrompt(conversationHistory, currentBot);
+            let botResponse;
+            if (currentBot === "user") {
+                botResponse = await getUserResponse();
+                conversationHistory.push({ role: "user", content: botResponse });
+            } else {
+                botResponse = await getBotResponse(currentBot, prompt); // Use getBotResponse instead
+                conversationHistory.push({ role: "assistant", content: botResponse });
             }
-        };
 
-        let conversationHistory = [];
-        let currentBot = "user";
-        let conversationRounds = 10;
+            setTimeout(() => {
+                document.getElementById('botResponses').innerHTML +=
+                    `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+                textToSpeech(botResponse, 'fa');
+            }, (i * 1000) + 1000);
 
-        async function getBotResponse(botName, messages) {
-            const payload = {
-                ...BOT_SETTINGS[botName],
-                messages: messages
-            };
-
-            const headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${API_KEYS[botName]}`
-            };
-
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                if (!data.choices || !data.choices.length) {
-                    throw new Error("No response from API");
-                }
-
-                return data.choices[0].message.content;
-            } catch (error) {
-                console.error(error);
-                return "An error occurred while fetching the response.";
+            if (currentBot === "user") {
+                currentBot = "bot1";
+            } else if (currentBot === "bot1") {
+                currentBot = "bot2";
+            } else {
+                currentBot = "bot1";
             }
         }
+    }
 
-        function textToSpeech(text, lang) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            speechSynthesis.speak(utterance);
-        }
+    async function askQuestion() {
+        conversationRounds = document.getElementById('rounds').value;
+        await alternateConversation();
+    }
 
-        async function alternateConversation() {
-            for (let i = 0; i < conversationRounds; i++) {
-                const prompt = generatePrompt(conversationHistory, currentBot);
-                let botResponse;
-
-                if (currentBot === "user") {
-                    botResponse = await getUserResponse();
-                    conversationHistory.push({ role: "user", content: botResponse });
-                } else {
-                    botResponse = await getBotResponse(currentBot, prompt);
-                    conversationHistory.push({ role: "assistant", content: botResponse });
-                }
-
-                setTimeout(() => {
-                    document.getElementById('botResponses').innerHTML +=
-                        `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
-                    textToSpeech(botResponse, 'fa');
-                }, (i * 1000) + 1000);
-
-                currentBot = currentBot === "user" ? "bot1" : currentBot === "bot1" ? "bot2" : "bot1";
-            }
-        }
-
-        async function askQuestion() {
-            conversationRounds = document.getElementById('rounds').value;
-            await alternateConversation();
-        }
-
-        async function getUserResponse() {
-            return new Promise(resolve => {
-                const userQuestion = document.getElementById('question').value;
-                document.getElementById('question').value = "";
-                resolve(userQuestion);
-            });
-        }
-
-        document.getElementById('ask-button').addEventListener('click', askQuestion);
-    </script>
+    async function getUserResponse() {
+        return new Promise(resolve => {
+            const userQuestion = document.getElementById('question').value;
+            document.getElementById('question').value = "";
+            resolve(userQuestion);
+        });
+    }
+</script>
 </body>
 </html>

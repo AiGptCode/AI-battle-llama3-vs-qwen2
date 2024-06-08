@@ -1,23 +1,83 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Battle AI</title>
+    <title>AI Battle</title>
     <style>
-        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .top-bar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+        }
+        .main-section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+        }
+        .bot-response {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .bot1-response {
+            background-color: #e7f5ff;
+        }
+        .bot2-response {
+            background-color: #f5f0ff;
+        }
+        #question {
+            padding: 10px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 70%;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <h1>Battle AI</h1>
-    <input type="text" id="question" placeholder="Ask a question...">
-    <button onclick="askQuestion()">Ask</button>
-    <div id="bot1Response"></div>
-    <div id="bot2Response"></div>
+    <div class="top-bar">
+        <h1>AI Battle</h1>
+    </div>
+    <div class="main-section">
+        <div style="display: flex; align-items: center;">
+            <input type="text" id="question" placeholder="Ask a question...">
+            <button onclick="askQuestion()">Ask</button>
+        </div>
+        <div id="bot1Response" class="bot-response bot1-response"></div>
+        <div id="bot2Response" class="bot-response bot2-response"></div>
+    </div>
 
     <script>
         // Add your JavaScript code here
         var conversationHistory = [];
         var currentBot = "bot1";
-        var conversationRounds = 5;
+        var conversationRounds = 10;
 
         function generatePrompt(conversation, bot) {
             var systemMessage;
@@ -36,7 +96,7 @@
                 "messages": messages
             };
             var headers = {
-                "Authorization": "Bearer moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+                "Authorization": "Bearer YOUR_API_KEY",
                 "Content-Type": "application/json"
             };
             try {

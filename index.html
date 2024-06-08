@@ -158,14 +158,21 @@
     }
 
     async function getAssistantResponse(model, messages, apiKey) {
-        const url = "https://api.fireworks.ai/inference/v1/chat/completions";
+        const url = "https://api.fireworks.ai/inference/v1/completions";
         const payload = {
             model: `accounts/fireworks/models/${model}`,
+            max_tokens: 8192,  // تنظیم حداکثر توکن‌ها به 8192
+            top_p: 1,
+            top_k: 40,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            temperature: 0.6,
             messages: messages
         };
         const headers = {
-            "Authorization": `Bearer ${apiKey}`,
-            "Content-Type": "application/json"
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
         };
 
         try {
@@ -178,6 +185,9 @@
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
+            if (!data.choices || !data.choices.length) {
+                throw new Error("No response from API");
+            }
             return data.choices[0].message.content;
         } catch (error) {
             console.error(error);
@@ -206,7 +216,7 @@
 
             setTimeout(() => {
                 document.getElementById('botResponses').innerHTML +=
-                    `<div class ="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+                    `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
                 textToSpeech(botResponse, 'fa');
             }, (i * 1000) + 1000);
 

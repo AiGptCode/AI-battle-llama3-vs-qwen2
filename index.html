@@ -6,113 +6,117 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 
-body {
-    font-family: 'Orbitron', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #292929;
-    color: #D35400;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-}
-    
-.top-bar {
-    background-color: #505050;
-    color: #FFD700;
-    padding: 20px;
-    text-align: center;
-    width: 100%;
-    font-size: 24px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
+        body {
+            font-family: 'Orbitron', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #292929;
+            color: #D35400;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
 
-.top-bar img {
-    max-width: 100%;
-    height: auto;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-}
+        .top-bar {
+            background-color: #333;
+            color: #ffd700;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            font-size: 28px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
 
-.main-section {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #333;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    border-radius: 10px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #ccc #f0f0f0;
-}
+        .top-bar h1 {
+            margin: 0;
+        }
 
-.bot-response {
-    margin: 20px 0;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    box-sizing: border-box;
-    font-size: 16px;
-    line-height: 1.8;
-    animation: fadeIn 1s;
-    color: #333;
-    font-family: Arial, sans-serif;
-}
+        .top-bar img {
+            max-width: 100%;
+            height: auto;
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
 
-.bot1-response {
-    background-color: #ffddc1;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+        .main-section {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            border-radius: 10px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #ccc #f0f0f0;
+        }
 
-.bot2-response {
-    background-color: #c1ffd7;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+        .bot-response {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.8;
+            animation: fadeIn 1s;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
 
-#question {
-    padding: 15px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    width: 70%;
-    box-sizing: border-box;
-    font-size: 18px;
-    color: #333;
-    background-color: #fff;
-}
+        .bot1-response {
+            background-color: #ffddc1;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-button {
-    padding: 15px;
-    background-color: #444;
-    color: #ffd700;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 18px;
-}
+        .bot2-response {
+            background-color: #c1ffd7;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-::-webkit-scrollbar {
-    width: 12px;
-}
+        #question {
+            padding: 15px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            width: 70%;
+            box-sizing: border-box;
+            font-size: 18px;
+            color: #333;
+            background-color: #fff;
+        }
 
-::-webkit-scrollbar-track {
-    background: #f0f0f0;
-}
+        button {
+            padding: 15px;
+            background-color: #444;
+            color: #ffd700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+        }
 
-::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border-radius: 20px;
-    border: 3px solid #f0f0f0;
-}
- </style>
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #ccc;
+            border-radius: 20px;
+            border: 3px solid #f0f0f0;
+        }
+    </style>
 </head>
 <body>
 
@@ -128,7 +132,8 @@ button {
     </div>
     <div>
         <label for="rounds">Select number of rounds:</label>
-        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">    </div>
+        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
+    </div>
     <div id="botResponses"></div>
 </div>
 <script>
@@ -188,7 +193,7 @@ button {
 
             setTimeout(() => {
                 document.getElementById('botResponses').innerHTML += 
-                    `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+                    `<div class ="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
                 textToSpeech(botResponse, 'fa');
             }, (i * 1000) + 1000);
 

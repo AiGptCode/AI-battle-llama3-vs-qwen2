@@ -145,9 +145,9 @@
  </div>
  <script>
  let conversationHistory = [];
- let currentBot = "user";
- let conversationRounds = 10;
- const apiKeys = {
+    let currentBot = "user";
+    let conversationRounds = 10;
+    const apiKeys = {
         "qwen2-72b-instruct": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
         "llama-v3-70b-instruct": "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9"
     };
@@ -159,8 +159,7 @@
         return [{ role: "system", content: systemMessage }].concat(conversation);
     }
 
-    async function getAssistantResponse(model, messages) {
-        const apiKey = apiKeys[model];
+    async function getAssistantResponse(model, messages, apiKey) {
         const url = "https://api.fireworks.ai/inference/v1/chat/completions";
         const payload = {
             model: `accounts/fireworks/models/${model}`,
@@ -193,42 +192,44 @@
 
     async function alternateConversation() {
         for (let i = 0; i < conversationRounds; i++) {
-            const bot = currentBot === "bot1" ? "qwen2-72b-instruct" : "llama-v3-70b-instruct";
             const prompt = generatePrompt(conversationHistory, currentBot);
-            const botResponse = await getAssistantResponse(bot, prompt);
-            conversationHistory.push({ role: "assistant", content: botResponse });
+            let botResponse;
+            if (currentBot === "user") {
+                botResponse = await getUserResponse();
+                conversationHistory.push({ role: "user", content: botResponse });
+            } else {
+                const apiKey = apiKeys[currentBot];
+                botResponse = await getAssistantResponse(currentBot, prompt, apiKey);
+                conversationHistory.push({ role: "assistant", content: botResponse });
+            }
 
             setTimeout(() => {
-                document.getElementById('botResponses').innerHTML += 
-                    `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+                document.getElementById('botResponses').innerHTML +=
+                    `<div class ="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
                 textToSpeech(botResponse, 'fa');
             }, (i * 1000) + 1000);
 
-            currentBot = currentBot === "bot1" ? "bot2" : "bot1";
+            if (currentBot === "user") {
+                currentBot = "bot1";
+            } else if (currentBot === "bot1") {
+                currentBot = "bot2";
+            } else {
+                currentBot = "bot1";
+            }
         }
     }
 
     async function askQuestion() {
-        const question = document.getElementById('question').value;
-        conversationHistory.push({ role: "user", content: question });
         conversationRounds = document.getElementById('rounds').value;
-
-        const promptBot1 = generatePrompt(conversationHistory, "bot1");
-        const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1);
-        conversationHistory.push({ role: "assistant", content: bot1Response });
-        document.getElementById('botResponses').innerHTML += 
-            `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-        textToSpeech(bot1Response, 'fa');
-
-        conversationHistory.push({ role: "user", content: bot1Response });
-        const promptBot2 = generatePrompt(conversationHistory, "bot2");
-        const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2);
-        conversationHistory.push({ role: "assistant", content: bot2Response });
-        document.getElementById('botResponses').innerHTML += 
-            `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-        textToSpeech(bot2Response, 'fa');
-
         await alternateConversation();
+    }
+
+    async function getUserResponse() {
+        return new Promise(resolve => {
+            const userQuestion = document.getElementById('question').value;
+            document.getElementById('question').value = "";
+            resolve(userQuestion);
+        });
     }
 </script>
 </body>

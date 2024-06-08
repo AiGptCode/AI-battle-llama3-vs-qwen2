@@ -10,7 +10,8 @@ body {
     font-family: 'Orbitron', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #333; /* Changed background color for better contrast */
+    background-color: #0a0a0a; /* Dark background color */
+    color: #fff; /* Text color */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,7 +20,7 @@ body {
 }
 
 .top-bar {
-    background-color: #222; /* Darkened the top bar background */
+    background-color: #333;
     color: #ffd700;
     padding: 20px;
     text-align: center;
@@ -33,27 +34,13 @@ body {
     max-width: 800px;
     margin: 20px auto;
     padding: 20px;
-    background-color: #444; /* Changed background color for better contrast */
+    background-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
     width: 90%;
     border-radius: 10px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #333 #f0f0f0;
-}
-
-.main-section::-webkit-scrollbar {
-    width: 12px;
-}
-
-.main-section::-webkit-scrollbar-track {
-    background: #f0f0f0;
-}
-
-.main-section::-webkit-scrollbar-thumb {
-    background-color: #333;
-    border-radius: 20px;
-    border: 3px solid #f0f0f0;
 }
 
 .bot-response {
@@ -68,13 +55,13 @@ body {
 }
 
 .bot1-response {
-    background-color: #ffdf00; /* Changed to flat yellow */
+    background-color: #ff6f61; /* Flat color for User 1 */
     border: 1px solid #333;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 .bot2-response {
-    background-color: #ff7f00; /* Changed to flat orange */
+    background-color: #5cdb95; /* Flat color for User 2 */
     border: 1px solid #333;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
@@ -82,23 +69,37 @@ body {
 #question {
     padding: 15px;
     margin-right: 10px;
-    border: 1px solid #fff; /* Changed border color to white for contrast */
+    border: 1px solid #333;
     border-radius: 10px;
     width: 70%;
     box-sizing: border-box;
     font-size: 18px;
-    color: #fff; /* Changed text color to white for better visibility */
-    background-color: #fff; /* Changed background color to white */
+    color: #000; /* Question text color */
+    background-color: #fff; /* Question background color */
 }
 
 button {
     padding: 15px;
-    background-color: #ffd700; /* Changed to flat gold */
-    color: #333; /* Changed text color for better contrast */
+    background-color: #333;
+    color: #ffd700;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     font-size: 18px;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 20px;
+    border: 3px solid #f0f0f0;
 }
     </style>
 </head>

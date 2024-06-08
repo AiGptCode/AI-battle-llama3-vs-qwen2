@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -149,7 +148,7 @@
  let currentBot = "user";
  let conversationRounds = 10;
  const apiKeys = {
- "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+ "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM"
  "bot2": "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9"
  };
 
@@ -212,7 +211,7 @@
  } else {
  var prompt = generateBot2Prompt(conversationHistory);
  var botResponse = await getAssistantResponse("bot2", prompt);
- conversationHistory.push({"role": "assistant", "content": botResponse);
+ conversationHistory.push({"role": "assistant", "content": botResponse});
  setTimeout(() => {
  document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
  textToSpeech(botResponse, 'en');
@@ -237,14 +236,14 @@
 
  var prompt = generateBot1Prompt(conversationHistory);
  var bot1Response = await getAssistantResponse("bot1", prompt);
- conversationHistory.push({"role": "assistant", "content": bot1Response);
+ conversationHistory.push({"role": "assistant", "content": bot1Response});
  document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
  textToSpeech(bot1Response, 'en');
 
- conversationHistory.push({"role": "user", "content": bot1Response);
+ conversationHistory.push({"role": "user", "content": bot1Response});
  prompt = generateBot2Prompt(conversationHistory);
  var bot2Response = await getAssistantResponse("bot2", prompt);
- conversationHistory.push({"role": "assistant", "content": bot2Response);
+ conversationHistory.push({"role": "assistant", "content": bot2Response});
  document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
  textToSpeech(bot2Response, 'en');
 

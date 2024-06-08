@@ -18,7 +18,7 @@ body {
     justify-content: center;
     height: 100vh;
 }
-
+    
 .top-bar {
     background-color: #505050;
     color: #FFD700;
@@ -28,6 +28,15 @@ body {
     font-size: 24px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.top-bar img {
+    max-width: 100%;
+    height: auto;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .main-section {
@@ -109,6 +118,7 @@ button {
 
 <div class="top-bar">
     <h1>AI Battle</h1>
+    <img src="https://github.com/AiGptCode/t/blob/main/IMG_4113.png" alt="AI Battle Logo">
 </div>
 <div class="description">Welcome to our AI Battle! Ask a question and let our two AI models battle it out.</div>
 <div class="main-section">

@@ -7,7 +7,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
+            background-color: #f0f0f0;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -15,11 +15,12 @@
             height: 100vh;
         }
         .top-bar {
-            background-color: #4caf50;
+            background-color: #333;
             color: white;
-            padding: 10px;
+            padding: 20px;
             text-align: center;
             width: 100%;
+            font-size: 24px;
         }
         .main-section {
             max-width: 800px;
@@ -28,50 +29,56 @@
             background-color: white;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 90%;
-            border-radius: 5px;
+            border-radius: 10px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #4caf50 #f9f9f9;
+            scrollbar-color: #333 #f0f0f0;
         }
         .main-section::-webkit-scrollbar {
             width: 12px;
         }
         .main-section::-webkit-scrollbar-track {
-            background: #f9f9f9;
+            background: #f0f0f0;
         }
         .main-section::-webkit-scrollbar-thumb {
-            background-color: #4caf50;
+            background-color: #333;
             border-radius: 20px;
-            border: 3px solid #f9f9f9;
+            border: 3px solid #f0f0f0;
         }
         .bot-response {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
             width: 100%;
             box-sizing: border-box;
+            font-size: 20px;
+            line-height: 1.8;
         }
         .bot1-response {
-            background-color: #e8f5e9;
+            background-color: #e6f7ff;
+            border: 1px solid #333;
         }
         .bot2-response {
-            background-color: #fff9e6;
+            background-color: #fff0e6;
+            border: 1px solid #333;
         }
         #question {
-            padding: 10px;
+            padding: 15px;
             margin-right: 10px;
-            border: none;
-            border-radius: 5px;
+            border: 1px solid #333;
+            border-radius: 10px;
             width: 70%;
             box-sizing: border-box;
+            font-size: 18px;
         }
         button {
-            padding: 10px;
-            background-color: #4caf50;
+            padding: 15px;
+            background-color: #333;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
+            font-size: 18px;
         }
         @media screen and (max-width: 600px) {
             .main-section {
@@ -118,7 +125,7 @@
                 "messages": messages
             };
             var headers = {
-                "Authorization": "Bearer YOUR_FIREWORKS_AI_API_KEY",
+                "Authorization": "Bearer moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
                 "Content-Type": "application/json"
             };
             try {

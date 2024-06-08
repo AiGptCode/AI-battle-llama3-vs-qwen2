@@ -145,10 +145,15 @@
     let conversationHistory = [];
     let currentBot = "user";
     let conversationRounds = 10;
-    const apiKeys = {
-        "qwen2-72b-instruct": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
-        "llama-v3-70b-instruct": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
-    };
+    
+    // Function to set the API key for each bot
+    function getApiKey(botName) {
+        const apiKeys = {
+            "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+            "bot2": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
+        };
+        return apiKeys[botName];
+    }
 
     // Function to set the settings for each bot
     function setBotSettings(botName) {
@@ -179,8 +184,9 @@
     }
 
     // Function to make API call for each bot
-    async function getBotResponse(botName, messages, apiKey) {
+    async function getBotResponse(botName, messages) {
         const url = "https://api.fireworks.ai/inference/v1/completions";
+        const apiKey = getApiKey(botName);
         const settings = setBotSettings(botName);
 
         if (!settings) {
@@ -233,8 +239,7 @@
                 botResponse = await getUserResponse();
                 conversationHistory.push({ role: "user", content: botResponse });
             } else {
-                const apiKey = apiKeys[currentBot];
-                botResponse = await getBotResponse(currentBot, prompt, apiKey); // Use getBotResponse instead
+                botResponse = await getBotResponse(currentBot, prompt); // Use getBotResponse instead
                 conversationHistory.push({ role: "assistant", content: botResponse });
             }
 

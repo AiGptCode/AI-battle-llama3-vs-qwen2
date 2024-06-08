@@ -138,19 +138,11 @@
 </div>
 <script>
     let conversationHistory = [];
-    let currentBot = "bot1";
     let conversationRounds = 10;
     const apiKeys = {
         "qwen2-72b-instruct": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
         "llama-v3-70b-instruct": "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9"
     };
-
-    function generatePrompt(conversation, bot) {
-        const systemMessage = bot === "bot1" ?
-            "You are a highly intelligent assistant. Provide insightful and informative responses." :
-            "You are a critical thinker assistant. Analyze and respond thoughtfully and also answer questions in the same language as the user.";
-        return [{ role: "system", content: systemMessage }].concat(conversation);
-    }
 
     async function getAssistantResponse(model, messages, apiKey) {
         const url = "https://api.fireworks.ai/inference/v1/chat/completions";
@@ -190,18 +182,16 @@
 
         for (let i = 0; i < conversationRounds; i++) {
             // Bot1 response
-            const apiKeyBot1 = "QAwsdCAvRsIaGhoJQvXqfwNkwuDj7D1MyGqldWn07GV068cq";
-            const promptBot1 = generatePrompt(conversationHistory, "bot1");
-            const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1, apiKeyBot1);
+            const apiKeyBot1 = "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM";
+            const bot1Response = await getAssistantResponse("qwen2-72b-instruct", conversationHistory, apiKeyBot1);
             conversationHistory.push({ role: "assistant", content: bot1Response });
             document.getElementById('botResponses').innerHTML += 
                 `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
             textToSpeech(bot1Response, 'fa');
 
             // Bot2 response
-            const apiKeyBot2 = "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjJ";
-            const promptBot2 = generatePrompt(conversationHistory, "bot2");
-            const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2, apiKeyBot2);
+            const apiKeyBot2 = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
+            const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", conversationHistory, apiKeyBot2);
             conversationHistory.push({ role: "assistant", content: bot2Response });
             document.getElementById('botResponses').innerHTML += 
                 `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;

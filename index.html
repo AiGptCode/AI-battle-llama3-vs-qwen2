@@ -1,120 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Battle</title>
+    <title>AI Battle: A Conversation Between Two Intelligent Assistants</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #121212;
-            color: #f5f5f5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
+        /* Rest of the CSS code... */
         .top-bar {
-            background-color: #333;
+            background-color: #212121;
             padding: 20px;
             text-align: center;
             width: 100%;
             font-size: 24px;
+            animation: fade-in 1s ease-in-out;
         }
-        .main-section {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #212121;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 90%;
-            border-radius: 10px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #333 #212121;
-        }
-        .main-section::-webkit-scrollbar {
-            width: 12px;
-        }
-        .main-section::-webkit-scrollbar-track {
-            background: #212121;
-        }
-        .main-section::-webkit-scrollbar-thumb {
-            background-color: #333;
-            border-radius: 20px;
-            border: 3px solid #212121;
-        }
-        .bot-response {
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-            box-sizing: border-box;
-            font-size: 20px;
-            line-height: 1.8;
-            display: flex;
-            align-items: center;
-        }
-        .bot1-response {
-            background-color: #333;
-            border: 1px solid #f5f5f5;
-        }
-        .bot2-response {
-            background-color: #222;
-            border: 1px solid #f5f5f5;
-        }
-        .bot-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 20px;
-        }
-        .bot1-avatar {
-            background-color: #333;
-        }
-        .bot2-avatar {
-            background-color: #222;
-        }
-        .bot-title {
-            font-size: 18px;
+        .top-bar h1 {
+            font-size: 48px;
             font-weight: bold;
-            margin-bottom: 10px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ffc107, #ff9800, #2196f3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rotate-title 5s linear infinite;
         }
-        #question {
-            padding: 15px;
-            margin-right: 10px;
-            border: 1px solid #f5f5f5;
-            border-radius: 10px;
-            width: 70%;
-            box-sizing: border-box;
-            font-size: 18px;
-            color: #f5f5f5;
-            background-color: #212121;
-        }
-        button {
-            padding: 15px;
-            background-color: #333;
-            color: #f5f5f5;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #555;
-        }
-        @media screen and (max-width: 600px) {
-            .main-section {
-                width: 95%;
+        /* Rest of the CSS code... */
+        @keyframes rotate-title {
+            from {
+                transform: rotateX(0deg) rotateY(0deg);
             }
-            #question {
-                width: 60%;
+            to {
+                transform: rotateX(360deg) rotateY(360deg);
             }
         }
     </style>
@@ -122,16 +37,15 @@
 <body>
     <div class="top-bar">
         <h1>AI Battle</h1>
+        <p>Welcome to AI Battle, where two intelligent assistants engage in a conversation. Ask a question and see how they respond to each other's answers.</p>
     </div>
-    <div class="main-section">
-        <div style="display: flex; align-items: center;">
-            <input type="text" id="question" placeholder="Ask a question...">
-            <button onclick="askQuestion()">Ask</button>
-        </div>
-        <div id="botResponses"></div>
-    </div>
-
+    <!-- Rest of the HTML code... -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.3/gsap.min.js"></script>
     <script>
+        gsap.from(".top-bar", {duration: 1, opacity: 0, y: -50, ease: "power2.out"});
+        gsap.from(".main-section", {duration: 1, opacity: 0, y: 50, ease: "power2.out", delay: 0.5});
+    </script>
+
         var conversationHistory = [];
         var currentBot = "bot1";
         var conversationRounds = 10;

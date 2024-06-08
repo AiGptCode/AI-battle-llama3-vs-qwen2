@@ -145,15 +145,6 @@
     let conversationHistory = [];
     let currentBot = "user";
     let conversationRounds = 10;
-    
-    // Function to set the API key for each bot
-    function getApiKey(botName) {
-        const apiKeys = {
-            "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
-            "bot2": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
-        };
-        return apiKeys[botName];
-    }
 
     // Function to set the settings for each bot
     function setBotSettings(botName) {
@@ -186,8 +177,8 @@
     // Function to make API call for each bot
     async function getBotResponse(botName, messages) {
         const url = "https://api.fireworks.ai/inference/v1/completions";
-        const apiKey = getApiKey(botName);
         const settings = setBotSettings(botName);
+        const apiKey = getApiKey(botName);
 
         if (!settings) {
             console.error("Invalid bot name");
@@ -223,6 +214,15 @@
             console.error(error);
             return "An error occurred while fetching the response.";
         }
+    }
+
+    // Function to set the API key for each bot
+    function getApiKey(botName) {
+        const apiKeys = {
+            "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+            "bot2": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
+        };
+        return apiKeys[botName];
     }
 
     function textToSpeech(text, lang) {

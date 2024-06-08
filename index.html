@@ -122,13 +122,12 @@
 </div>
 <script>
     var conversationHistory = [];
-    var currentBot = "bot1";
     var conversationRounds = 10;
 
     // Language detection function
     function detectLanguage(text) {
         // Regular expression to match Persian characters
-        var persianRegex = /[\u0600-\u06FF]/;
+        var persianRegex = /[\u0600-\u 06FF]/;
 
         // Check if the text contains Persian characters
         if (persianRegex.test(text)) {
@@ -202,3 +201,6 @@
 </script>
 </body>
 </html>
+
+
+l

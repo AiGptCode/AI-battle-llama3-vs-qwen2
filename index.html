@@ -131,7 +131,7 @@ button {
         if (bot === "bot1") {
             systemMessage = "You are a highly intelligent assistant. Provide insightful and informative responses.";
         } else {
-            systemMessage = "You are a critical thinker assistant. Analyze and respond thoughtfully.";
+            systemMessage = "You are a critical thinker assistant. Analyze and respond thoughtfullyand if user ask in persian language answer it with farsi and same language .";
         }
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }

@@ -158,30 +158,22 @@
             bot2ApiKey = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
         }
 
-        var prompt = generatePrompt(conversationHistory, "bot1");
-        var bot1Response = await getAssistantResponse(bot1Model, prompt, bot1ApiKey);
+        var bot1Response = await getAssistantResponse(bot1Model, conversationHistory, bot1ApiKey);
         conversationHistory.push({"role": "assistant", "content": bot1Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
         textToSpeech(bot1Response, lang);
 
-        prompt = generatePrompt(conversationHistory, "bot2");
-        var bot2Response = await getAssistantResponse(bot2Model, prompt, bot2ApiKey);
+        var bot2Response = await getAssistantResponse(bot2Model, conversationHistory, bot2ApiKey);
         conversationHistory.push({"role": "assistant", "content": bot2Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, lang);
     }
 
-    function generatePrompt(conversation, bot) {
-        var systemMessage;
-        systemMessage = "You are a highly intelligent assistant. Provide insightful and informative responses.";
-        return [{"role": "system", "content": systemMessage}].concat(conversation);
-    }
-
-    async function getAssistantResponse(model, messages, apiKey) {
+    async function getAssistantResponse(model, conversation, apiKey) {
         var url = "https://api.fireworks.ai/inference/v1/chat/completions";
         var payload = {
             "model": model,
-            "messages": messages
+            "messages": conversation
         };
         var headers = {
             "Authorization": "Bearer " + apiKey,

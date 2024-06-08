@@ -150,25 +150,49 @@
         "llama-v3-70b-instruct": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
     };
 
-    function generatePrompt(conversation, bot) {
-        const systemMessage = bot === "bot1" ?
-            "You are a highly intelligent assistant. Provide insightful and informative responses." :
-            "You are a critical thinker assistant. Analyze and respond thoughtfully and also answer questions in the same language as the user.";
-        return [{ role: "system", content: systemMessage }].concat(conversation);
+    // Function to set the settings for each bot
+    function setBotSettings(botName) {
+        switch (botName) {
+            case "bot1":
+                return {
+                    model: "accounts/fireworks/models/qwen2-72b-instruct",
+                    max_tokens: 8192, // Set maximum tokens to 8192
+                    top_p: 1,
+                    top_k: 40,
+                    presence_penalty: 0,
+                    frequency_penalty: 0,
+                    temperature: 0.6
+                };
+            case "bot2":
+                return {
+                    model: "accounts/fireworks/models/llama-v3-70b-instruct",
+                    max_tokens: 8192, // Set maximum tokens to 8192
+                    top_p: 1,
+                    top_k: 40,
+                    presence_penalty: 0,
+                    frequency_penalty: 0,
+                    temperature: 0.6
+                };
+            default:
+                return null;
+        }
     }
 
-    async function getAssistantResponse(model, messages, apiKey) {
+    // Function to make API call for each bot
+    async function getBotResponse(botName, messages, apiKey) {
         const url = "https://api.fireworks.ai/inference/v1/completions";
+        const settings = setBotSettings(botName);
+
+        if (!settings) {
+            console.error("Invalid bot name");
+            return "An error occurred while fetching the response.";
+        }
+
         const payload = {
-            model: `accounts/fireworks/models/${model}`,
-            max_tokens: 8192,  // تنظیم حداکثر توکن‌ها به 8192
-            top_p: 1,
-            top_k: 40,
-            presence_penalty: 0,
-            frequency_penalty: 0,
-            temperature: 0.6,
+            ...settings,
             messages: messages
         };
+
         const headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
@@ -210,14 +234,14 @@
                 conversationHistory.push({ role: "user", content: botResponse });
             } else {
                 const apiKey = apiKeys[currentBot];
-                botResponse = await getAssistantResponse(currentBot, prompt, apiKey);
+                botResponse = await getBotResponse(currentBot, prompt, apiKey); // Use getBotResponse instead
                 conversationHistory.push({ role: "assistant", content: botResponse });
             }
 
             setTimeout(() => {
                 document.getElementById('botResponses').innerHTML +=
                     `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
-                textToSpeech(botResponse, 'en');
+                textToSpeech(botResponse, 'fa');
             }, (i * 1000) + 1000);
 
             if (currentBot === "user") {
@@ -244,4 +268,4 @@
     }
 </script>
 </body>
-</html> 
+</html>

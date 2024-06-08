@@ -103,6 +103,12 @@
             font-size: 18px;
         }
 
+        .loading-indicator {
+            display: none;
+            font-size: 18px;
+            color: #ffd700;
+        }
+
         ::-webkit-scrollbar {
             width: 12px;
         }
@@ -127,7 +133,7 @@
 <div class="description">Welcome to our AI Battle! Ask a question and let our two AI models battle it out.</div>
 <div class="main-section">
     <div style="display: flex; align-items: center;">
-        <input type="text" id="question" placeholder="Ask a question...">
+        <        <input type="text" id="question" placeholder="Ask a question...">
         <button onclick="askQuestion()">Ask</button>
     </div>
     <div>
@@ -135,6 +141,7 @@
         <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
     </div>
     <div id="botResponses"></div>
+    <div class="loading-indicator" id="loading-indicator">Loading...</div>
 </div>
 <script>
     let conversationHistory = [];
@@ -208,10 +215,19 @@
                 currentBot = "bot1";
             }
         }
+        document.getElementById('loading-indicator').style.display = 'none';
     }
 
     async function askQuestion() {
-        var question = document.getElementById('question').value;
+        var question = document        var question = document.getElementById('question').value;
+        conversationRounds = parseInt(document.getElementById('rounds').value);
+
+        if (!question) {
+            alert("Please enter a question.");
+            return;
+        }
+
+        document.getElementById('loading-indicator').style.display = 'block';
         conversationHistory.push({"role": "user", "content": question});
 
         var prompt = generateBot1Prompt(conversationHistory);
@@ -227,7 +243,8 @@
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, 'en');
 
-        alternateConversation();
+        await alternateConversation();
+        document.getElementById('loading-indicator').style.display = 'none';
     }
 </script>
 </body>

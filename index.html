@@ -1,3 +1,5 @@
+Final
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,8 +12,8 @@
             font-family: 'Orbitron', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #292929;
-            color: #D35400;
+            background-color: #0a0a0a;
+            color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -25,77 +27,68 @@
             padding: 20px;
             text-align: center;
             width: 100%;
-            font-size: 28px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .top-bar h1 {
-            margin: 0;
-        }
-
-        .top-bar img {
-            max-width: 60%;
-            height: auto;
-            position: center;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-0%);
+            font-size: 24px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .main-section {
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
-            background-color: #333;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             width: 90%;
             border-radius: 10px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #ccc #f0f0f0;
+            scrollbar-color: #333 #f0f0f0;
         }
 
-        .bot-response {
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            box-sizing: border-box;
-            font-size: 16px;
-            line-height: 1.8;
-            animation: fadeIn 1s;
-            color: #333;
-            font-family: Arial, sans-serif;
-        }
+‎        . /* تنظیمات پایه برای هر پاسخ */
+bot-response {
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 1.8;
+    animation: fadeIn 1s;
+    color: #000; /* افزودن رنگ فونت مشکی */
+}
 
-        .bot1-response {
-            background-color: #ffddc1;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+/* تنظیمات پاسخ های bot1 */
+.bot1-response {
+    background-color: #ff6f61;
+    border: 1px solid #333;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    color: #000; /* افزودن رنگ فونت مشکی */
+}
 
-        .bot2-response {
-            background-color: #c1ffd7;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+/* تنظیمات پاسخ های bot2 */
+.bot2-response {
+    background-color: #5cdb95;
+    border: 1px solid #333;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    color: #000; /* افزودن رنگ فونت مشکی */
+}
 
         #question {
             padding: 15px;
             margin-right: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #333;
             border-radius: 10px;
             width: 70%;
             box-sizing: border-box;
             font-size: 18px;
-            color: #333;
+            color: #000;
             background-color: #fff;
         }
 
         button {
             padding: 15px;
-            background-color: #444;
+            background-color: #333;
             color: #ffd700;
             border: none;
             border-radius: 10px;
@@ -112,17 +105,15 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: #ccc;
+            background-color: #333;
             border-radius: 20px;
             border: 3px solid #f0f0f0;
         }
     </style>
 </head>
 <body>
-
 <div class="top-bar">
     <h1>AI Battle</h1>
-    <img src="https://raw.githubusercontent.com/AiGptCode/t/main/IMG_4113.png" alt="AI Battle Logo">
 </div>
 <div class="description">Welcome to our AI Battle! Ask a question and let our two AI models battle it out.</div>
 <div class="main-section">
@@ -132,8 +123,7 @@
     </div>
     <div>
         <label for="rounds">Select number of rounds:</label>
-        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
-    </div>
+        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">    </div>
     <div id="botResponses"></div>
 </div>
 <script>
@@ -152,7 +142,8 @@
         return [{ role: "system", content: systemMessage }].concat(conversation);
     }
 
-    async function getAssistantResponse(model, messages, apiKey) {
+    async function getAssistantResponse(model, messages) {
+        const apiKey = apiKeys[model];
         const url = "https://api.fireworks.ai/inference/v1/chat/completions";
         const payload = {
             model: `accounts/fireworks/models/${model}`,
@@ -183,30 +174,44 @@
         speechSynthesis.speak(utterance);
     }
 
+    async function alternateConversation() {
+        for (let i = 0; i < conversationRounds; i++) {
+            const bot = currentBot === "bot1" ? "qwen2-72b-instruct" : "llama-v3-70b-instruct";
+            const prompt = generatePrompt(conversationHistory, currentBot);
+            const botResponse = await getAssistantResponse(bot, prompt);
+            conversationHistory.push({ role: "assistant", content: botResponse });
+
+            setTimeout(() => {
+                document.getElementById('botResponses').innerHTML += 
+                    `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+                textToSpeech(botResponse, 'fa');
+            }, (i * 2000) + 2000);
+
+            currentBot = currentBot === "bot1" ? "bot2" : "bot1";
+        }
+    }
+
     async function askQuestion() {
         const question = document.getElementById('question').value;
         conversationHistory.push({ role: "user", content: question });
         conversationRounds = document.getElementById('rounds').value;
 
-        for (let i = 0; i < conversationRounds; i++) {
-            // Bot1 response
-            const apiKeyBot1 = "QAwsdCAvRsIaGhoJQvXqfwNkwuDj7D1MyGqldWn07GV068cq";
-            const promptBot1 = generatePrompt(conversationHistory, "bot1");
-            const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1, apiKeyBot1);
-            conversationHistory.push({ role: "assistant", content: bot1Response });
-            document.getElementById('botResponses').innerHTML += 
-                `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-            textToSpeech(bot1Response, 'fa');
+        const promptBot1 = generatePrompt(conversationHistory, "bot1");
+        const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1);
+        conversationHistory.push({ role: "assistant", content: bot1Response });
+        document.getElementById('botResponses').innerHTML += 
+            `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+        textToSpeech(bot1Response, 'en');
 
-            // Bot2 response
-            const apiKeyBot2 = "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjJ";
-            const promptBot2 = generatePrompt(conversationHistory, "bot2");
-            const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2, apiKeyBot2);
-            conversationHistory.push({ role: "assistant", content: bot2Response });
-            document.getElementById('botResponses').innerHTML += 
-                `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-            textToSpeech(bot2Response, 'fa');
-        }
+        conversationHistory.push({ role: "user", content: bot1Response });
+        const promptBot2 = generatePrompt(conversationHistory, "bot2");
+        const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2);
+        conversationHistory.push({ role: "assistant", content: bot2Response });
+        document.getElementById('botResponses').innerHTML += 
+            `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+        textToSpeech(bot2Response, 'en');
+
+        await alternateConversation();
     }
 </script>
 </body>

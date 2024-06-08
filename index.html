@@ -99,8 +99,7 @@
             <input type="text" id="question" placeholder="Ask a question...">
             <button onclick="askQuestion()">Ask</button>
         </div>
-        <div id="bot1Response" class="bot-response bot1-response"></div>
-        <div id="bot2Response" class="bot-response bot2-response"></div>
+        <div id="botResponses"></div>
     </div>
 
     <script>
@@ -156,7 +155,7 @@
                     var botResponse = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
                     conversationHistory.push({"role": "assistant", "content": botResponse});
                     setTimeout(() => {
-                        document.getElementById('bot1Response').textContent = botResponse;
+                        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${botResponse}</p></div>`;
                         textToSpeech(botResponse, 'en');
                     }, (i * 2000) + 2000); // 2-second delay after each response
                     currentBot = "bot2";
@@ -165,7 +164,7 @@
                     var botResponse = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
                     conversationHistory.push({"role": "assistant", "content": botResponse});
                     setTimeout(() => {
-                        document.getElementById('bot2Response').textContent = botResponse;
+                        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
                         textToSpeech(botResponse, 'en');
                     }, (i * 2000) + 2000); // 2-second delay after each response
                     currentBot = "bot1";
@@ -180,14 +179,14 @@
             var prompt = generatePrompt(conversationHistory, "bot1");
             var bot1Response = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
             conversationHistory.push({"role": "assistant", "content": bot1Response});
-            document.getElementById('bot1Response').textContent = bot1Response;
+            document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
             textToSpeech(bot1Response, 'en');
 
             conversationHistory.push({"role": "user", "content": bot1Response});
             prompt = generatePrompt(conversationHistory, "bot2");
             var bot2Response = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
             conversationHistory.push({"role": "assistant", "content": bot2Response});
-            document.getElementById('bot2Response').textContent = bot2Response;
+            document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
             textToSpeech(bot2Response, 'en');
 
             alternateConversation();

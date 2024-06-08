@@ -125,12 +125,17 @@
     var currentBot = "bot1";
     var conversationRounds = 10;
 
-    // Basic language detection function
+    // Language detection function
     function detectLanguage(text) {
-        // For simplicity, let's assume English by default
-        var lang = "en";
-        // You can enhance this function with a more sophisticated language detection logic if needed
-        return lang;
+        // Regular expression to match Persian characters
+        var persianRegex = /[\u0600-\u06FF]/;
+
+        // Check if the text contains Persian characters
+        if (persianRegex.test(text)) {
+            return "fa"; // Return "fa" for Persian language
+        } else {
+            return "en"; // Default to English
+        }
     }
 
     async function askQuestion() {
@@ -159,14 +164,11 @@
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
         textToSpeech(bot1Response, lang);
 
-        conversationHistory.push({"role": "user", "content": bot1Response});
         prompt = generatePrompt(conversationHistory, "bot2");
         var bot2Response = await getAssistantResponse(bot2Model, prompt, bot2ApiKey);
         conversationHistory.push({"role": "assistant", "content": bot2Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, lang);
-
-        alternateConversation();
     }
 
     function generatePrompt(conversation, bot) {

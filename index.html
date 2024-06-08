@@ -152,8 +152,7 @@
         return [{ role: "system", content: systemMessage }].concat(conversation);
     }
 
-    async function getAssistantResponse(model, messages) {
-        const apiKey = apiKeys[model];
+    async function getAssistantResponse(model, messages, apiKey) {
         const url = "https://api.fireworks.ai/inference/v1/chat/completions";
         const payload = {
             model: `accounts/fireworks/models/${model}`,
@@ -184,44 +183,30 @@
         speechSynthesis.speak(utterance);
     }
 
-    async function alternateConversation() {
-        for (let i = 0; i < conversationRounds; i++) {
-            const bot = currentBot === "bot1" ? "qwen2-72b-instruct" : "llama-v3-70b-instruct";
-            const prompt = generatePrompt(conversationHistory, currentBot);
-            const botResponse = await getAssistantResponse(bot, prompt);
-            conversationHistory.push({ role: "assistant", content: botResponse });
-
-            setTimeout(() => {
-                document.getElementById('botResponses').innerHTML += 
-                    `<div class ="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
-                textToSpeech(botResponse, 'fa');
-            }, (i * 1000) + 1000);
-
-            currentBot = currentBot === "bot1" ? "bot2" : "bot1";
-        }
-    }
-
     async function askQuestion() {
         const question = document.getElementById('question').value;
         conversationHistory.push({ role: "user", content: question });
         conversationRounds = document.getElementById('rounds').value;
 
-        const promptBot1 = generatePrompt(conversationHistory, "bot1");
-        const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1);
-        conversationHistory.push({ role: "assistant", content: bot1Response });
-        document.getElementById('botResponses').innerHTML += 
-            `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-        textToSpeech(bot1Response, 'fa');
+        for (let i = 0; i < conversationRounds; i++) {
+            // Bot1 response
+            const apiKeyBot1 = "QAwsdCAvRsIaGhoJQvXqfwNkwuDj7D1MyGqldWn07GV068cq";
+            const promptBot1 = generatePrompt(conversationHistory, "bot1");
+            const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1, apiKeyBot1);
+            conversationHistory.push({ role: "assistant", content: bot1Response });
+            document.getElementById('botResponses').innerHTML += 
+                `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+            textToSpeech(bot1Response, 'fa');
 
-        conversationHistory.push({ role: "user", content: bot1Response });
-        const promptBot2 = generatePrompt(conversationHistory, "bot2");
-        const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2);
-        conversationHistory.push({ role: "assistant", content: bot2Response });
-        document.getElementById('botResponses').innerHTML += 
-            `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-        textToSpeech(bot2Response, 'fa');
-
-        await alternateConversation();
+            // Bot2 response
+            const apiKeyBot2 = "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjJ";
+            const promptBot2 = generatePrompt(conversationHistory, "bot2");
+            const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2, apiKeyBot2);
+            conversationHistory.push({ role: "assistant", content: bot2Response });
+            document.getElementById('botResponses').innerHTML += 
+                `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+            textToSpeech(bot2Response, 'fa');
+        }
     }
 </script>
 </body>

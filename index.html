@@ -138,11 +138,19 @@
 </div>
 <script>
     let conversationHistory = [];
+    let currentBot = "bot1";
     let conversationRounds = 10;
     const apiKeys = {
         "qwen2-72b-instruct": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
         "llama-v3-70b-instruct": "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9"
     };
+
+    function generatePrompt(conversation, bot) {
+        const systemMessage = bot === "bot1" ?
+            "You are a highly intelligent assistant. Provide insightful and informative responses." :
+            "You are a critical thinker assistant. Analyze and respond thoughtfully and also answer questions in the same language as the user.";
+        return [{ role: "system", content: systemMessage }].concat(conversation);
+    }
 
     async function getAssistantResponse(model, messages, apiKey) {
         const url = "https://api.fireworks.ai/inference/v1/chat/completions";
@@ -175,28 +183,47 @@
         speechSynthesis.speak(utterance);
     }
 
+    async function alternateConversation() {
+        for (let i = 0; i < conversationRounds; i++) {
+            const bot = currentBot === "bot1" ? "bot2" : "bot1";
+            const prompt = generatePrompt(conversationHistory, currentBot);
+            const apiKey = apiKeys[currentBot];
+            const botResponse = await getAssistantResponse(currentBot, prompt, apiKey);
+            conversationHistory.push({ role: "assistant", content: botResponse });
+
+            setTimeout(() => {
+                document.getElementById('botResponses').innerHTML +=
+                    `<div class ="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+                textToSpeech(botResponse, 'fa');
+            }, (i * 1000) + 1000);
+
+            currentBot = bot;
+        }
+    }
+
     async function askQuestion() {
         const question = document.getElementById('question').value;
         conversationHistory.push({ role: "user", content: question });
         conversationRounds = document.getElementById('rounds').value;
 
-        for (let i = 0; i < conversationRounds; i++) {
-            // Bot1 response
-            const apiKeyBot1 = "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM";
-            const bot1Response = await getAssistantResponse("qwen2-72b-instruct", conversationHistory, apiKeyBot1);
-            conversationHistory.push({ role: "assistant", content: bot1Response });
-            document.getElementById('botResponses').innerHTML += 
-                `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-            textToSpeech(bot1Response, 'fa');
+        const promptBot1 = generatePrompt(conversationHistory, "bot1");
+        const apiKeyBot1 = apiKeys["qwen2-72b-instruct"];
+        const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1, apiKeyBot1);
+        conversationHistory.push({ role: "assistant", content: bot1Response });
+        document.getElementById('botResponses').innerHTML +=
+            `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+        textToSpeech(bot1Response, 'fa');
 
-            // Bot2 response
-            const apiKeyBot2 = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
-            const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", conversationHistory, apiKeyBot2);
-            conversationHistory.push({ role: "assistant", content: bot2Response });
-            document.getElementById('botResponses').innerHTML += 
-                `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-            textToSpeech(bot2Response, 'fa');
-        }
+        conversationHistory.push({ role: "user", content: bot1Response });
+        const promptBot2 = generatePrompt(conversationHistory, "bot2");
+        const apiKeyBot2 = apiKeys["llama-v3-70b-instruct"];
+        const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2, apiKeyBot2);
+        conversationHistory.push({ role: "assistant", content: bot2Response });
+        document.getElementById('botResponses').innerHTML +=
+            `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+        textToSpeech(bot2Response, 'fa');
+
+        await alternateConversation();
     }
 </script>
 </body>

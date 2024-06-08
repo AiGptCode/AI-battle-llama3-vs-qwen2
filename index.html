@@ -233,7 +233,7 @@
  }
 
  document.getElementById('loading-indicator').style.display = 'block';
- conversationHistory.push({"role": "user", "content": question);
+ conversationHistory.push({"role": "user", "content": question});
 
  var prompt = generateBot1Prompt(conversationHistory);
  var bot1Response = await getAssistantResponse("bot1", prompt);

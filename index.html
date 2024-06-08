@@ -123,11 +123,12 @@
 <script>
     var conversationHistory = [];
     var conversationRounds = 10;
+    var currentBot = 1;
 
     // Language detection function
     function detectLanguage(text) {
         // Regular expression to match Persian characters
-        var persianRegex = /[\u0600-\u 06FF]/;
+        var persianRegex = /[\u0600-\u06FF]/;
 
         // Check if the text contains Persian characters
         if (persianRegex.test(text)) {
@@ -157,15 +158,19 @@
             bot2ApiKey = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
         }
 
-        var bot1Response = await getAssistantResponse(bot1Model, conversationHistory, bot1ApiKey);
-        conversationHistory.push({"role": "assistant", "content": bot1Response});
-        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-        textToSpeech(bot1Response, lang);
-
-        var bot2Response = await getAssistantResponse(bot2Model, conversationHistory, bot2ApiKey);
-        conversationHistory.push({"role": "assistant", "content": bot2Response});
-        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-        textToSpeech(bot2Response, lang);
+        if (currentBot === 1) {
+            var bot1Response = await getAssistantResponse(bot1Model, conversationHistory, bot1ApiKey);
+            conversationHistory.push({"role": "assistant", "content": bot1Response});
+            document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+            textToSpeech(bot1Response, lang);
+            currentBot = 2;
+        } else {
+            var bot2Response = await getAssistantResponse(bot2Model, conversationHistory, bot2ApiKey);
+            conversationHistory.push({"role": "assistant", "content": bot2Response});
+            document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+            textToSpeech(bot2Response, lang);
+            currentBot = 1;
+        }
     }
 
     async function getAssistantResponse(model, conversation, apiKey) {
@@ -201,5 +206,3 @@
 </script>
 </body>
 </html>
-
-

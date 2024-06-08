@@ -125,14 +125,11 @@
     var currentBot = "bot1";
     var conversationRounds = 10;
 
-    // Language detection function
+    // Basic language detection function
     function detectLanguage(text) {
-        var lang = "en"; // Default to English
-        try {
-            lang = detect(text); // Use langdetect to detect language
-        } catch (error) {
-            console.error("Error detecting language:", error);
-        }
+        // For simplicity, let's assume English by default
+        var lang = "en";
+        // You can enhance this function with a more sophisticated language detection logic if needed
         return lang;
     }
 
@@ -164,7 +161,7 @@
 
         conversationHistory.push({"role": "user", "content": bot1Response});
         prompt = generatePrompt(conversationHistory, "bot2");
-        var bot2Response = await getAssistantResponse(bot2Model, prompt, bot2 ApiKey);
+        var bot2Response = await getAssistantResponse(bot2Model, prompt, bot2ApiKey);
         conversationHistory.push({"role": "assistant", "content": bot2Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, lang);
@@ -208,7 +205,6 @@
         utterance.lang = lang; // Set language parameter for text-to-speech
         speechSynthesis.speak(utterance);
     }
-
 </script>
 </body>
 </html>

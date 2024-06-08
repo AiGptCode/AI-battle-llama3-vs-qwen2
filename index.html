@@ -142,21 +142,32 @@
         conversationRounds = document.getElementById('rounds').value;
 
         var lang = detectLanguage(question);
-        var bot1Model = "accounts/fireworks/models/qwen2-72b-instruct";
-        var bot2Model = lang === "fa" ? bot1Model : "accounts/fireworks/models/llama-v3-70b-instruct";
+        var bot1Model, bot2Model, bot1ApiKey, bot2ApiKey;
+
+        if (lang === "fa") {
+            bot1Model = "accounts/fireworks/models/qwen2-72b-instruct";
+            bot2Model = "accounts/fireworks/models/qwen2-72b-instruct";
+            bot1ApiKey = "QAwsdCAvRsIaGhoJQvXqfwNkwuDj7D1MyGqldWn07GV068cq";
+            bot2ApiKey = "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS";
+        } else {
+            bot1Model = "accounts/fireworks/models/qwen2-72b-instruct";
+            bot2Model = "accounts/fireworks/models/llama-v3-70b-instruct";
+            bot1ApiKey = "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM";
+            bot2ApiKey = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
+        }
 
         var prompt = generatePrompt(conversationHistory, "bot1");
-        var bot1Response = await getAssistantResponse(bot1Model, prompt);
+        var bot1Response = await getAssistantResponse(bot1Model, prompt, bot1ApiKey);
         conversationHistory.push({"role": "assistant", "content": bot1Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-        textToSpeech(bot1Response, lang); // Set language parameter for text-to-speech
+        textToSpeech(bot1Response, lang);
 
         conversationHistory.push({"role": "user", "content": bot1Response});
         prompt = generatePrompt(conversationHistory, "bot2");
-        var bot2Response = await getAssistantResponse(bot2Model, prompt);
+        var bot2Response = await getAssistantResponse(bot2Model, prompt, bot2 ApiKey);
         conversationHistory.push({"role": "assistant", "content": bot2Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-        textToSpeech(bot2Response, lang); // Set language parameter for text-to-speech
+        textToSpeech(bot2Response, lang);
 
         alternateConversation();
     }
@@ -167,13 +178,7 @@
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 
-    async function getAssistantResponse(model, messages) {
-        var apiKey;
-        if (model === "accounts/fireworks/models/qwen2-72b-instruct") {
-            apiKey = "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM";
-        } else {
-            apiKey = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
-        }
+    async function getAssistantResponse(model, messages, apiKey) {
         var url = "https://api.fireworks.ai/inference/v1/chat/completions";
         var payload = {
             "model": model,
@@ -204,37 +209,6 @@
         speechSynthesis.speak(utterance);
     }
 
-    async function askQuestion() {
-    var question = document.getElementById('question').value;
-    conversationHistory.push({"role": "user", "content": question});
-    conversationRounds = document.getElementById('rounds').value;
-
-    var lang = detectLanguage(question);
-    var bot1Model, bot2Model;
-
-    if (lang === "fa") {
-        bot1Model = "accounts/fireworks/models/qwen2-72b-instruct";
-        bot2Model = "accounts/fireworks/models/qwen2-72b-instruct";
-    } else {
-        bot1Model = "accounts/accounts/fireworks/models/qwen2-72b-instruct";
-        bot2Model = "accounts/fireworks/models/llama-v3-70b-instruct";
-    }
-
-    var prompt = generatePrompt(conversationHistory, "bot1");
-    var bot1Response = await getAssistantResponse(bot1Model, prompt);
-    conversationHistory.push({"role": "assistant", "content": bot1Response});
-    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-    textToSpeech(bot1Response, lang);
-
-    conversationHistory.push({"role": "user", "content": bot1Response});
-    prompt = generatePrompt(conversationHistory, "bot2");
-    var bot2Response = await getAssistantResponse(bot2Model, prompt);
-    conversationHistory.push({"role": "assistant", "content": bot2Response});
-    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-    textToSpeech(bot2Response, lang);
-
-    alternateConversation();
-}
 </script>
 </body>
 </html>

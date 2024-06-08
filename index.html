@@ -180,34 +180,60 @@
     conversationRounds = document.getElementById('rounds').value;
 
     var lang = detectLanguage(question);
-    var bot1Model, bot2Model, bot1ApiKey, bot2ApiKey;
+    var bot1Model, bot2Model;
 
     if (lang === "fa") {
         bot1Model = "accounts/fireworks/models/qwen2-72b-instruct";
         bot2Model = "accounts/fireworks/models/qwen2-72b-instruct";
-        bot1ApiKey = "QAwsdCAvRsIaGhoJQvXqfwNkwuDj7D1MyGqldWn07GV068cq";
-        bot2ApiKey = "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS";
     } else {
         bot1Model = "accounts/fireworks/models/qwen2-72b-instruct";
         bot2Model = "accounts/fireworks/models/llama-v3-70b-instruct";
-        bot1ApiKey = "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM";
-        bot2ApiKey = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
     }
 
     if (currentBot === 1) {
-        var bot1Response = await getAssistantResponse(bot1Model, conversationHistory, bot1ApiKey);
+        var bot1Response = await getAssistantResponse(bot1Model, conversationHistory);
         console.log("Bot 1 Response:", bot1Response); // Log bot 1's response
         conversationHistory.push({"role": "assistant", "content": bot1Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
         textToSpeech(bot1Response, lang);
         currentBot = 2;
     } else {
-        var bot2Response = await getAssistantResponse(bot2Model, conversationHistory, bot2ApiKey);
+        var bot2Response = await getAssistantResponse(bot2Model, conversationHistory);
         console.log("Bot 2 Response:", bot2Response); // Log bot 2's response
         conversationHistory.push({"role": "assistant", "content": bot2Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, lang);
         currentBot = 1;
+    }
+}
+
+async function getAssistantResponse(model, messages) {
+    var apiKey;
+    if (model === "accounts/fireworks/models/qwen2-72b-instruct") {
+        apiKey = "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM";
+    } else {
+        apiKey = "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9";
+    }
+    var url = "https://api.fireworks.ai/inference/v1/chat/completions";
+    var payload = {
+        "model": model,
+        "messages": messages
+    };
+    var headers = {
+        "Authorization": "Bearer " + apiKey,
+        "Content-Type": "application/json"
+    };
+    try {
+        var response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(payload)
+        });
+        var data = await response.json();
+        return data.choices[0].message.content;
+    } catch (error) {
+        console.error(error);
+        return "An error occurred while fetching the response.";
     }
 }
 

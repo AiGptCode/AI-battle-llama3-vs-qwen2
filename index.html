@@ -186,55 +186,45 @@
 
     async function alternateConversation() {
         for (let i = 0; i < conversationRounds; i++) {
-            const bot = currentBot === "bot1" ? "bot1" : "bot2";
+            const bot = currentBot === "bot1" ? "bot2" : "bot1";
             const prompt = generatePrompt(conversationHistory, currentBot);
             const botResponse = await getAssistantResponse(bot, prompt);
             conversationHistory.push({ role: "assistant", content: botResponse });
 
             setTimeout(() => {
-                document.getElementById('botResponses').innerHTML +=
-                    `<div class ="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+                document.getElementById('botResponses').innerHTML += 
+                    `<div class ="bot-response ${bot}-response"><p>${botResponse}</p></div>`;
                 textToSpeech(botResponse, 'fa');
             }, (i * 1000) + 1000);
 
-            if (currentBot === "user") {
-                currentBot = "bot1";
-            } else if (currentBot === "bot1") {
-                currentBot = "bot2";
-            } else {
-                currentBot = "user";
-            }
+            currentBot = bot;
         }
     }
 
     async function askQuestion() {
-        const userQuestion = await getUserResponse();
-        conversationHistory.push({ role: "user", content: userQuestion });
+        const question = document.getElementById('question').value;
+        conversationHistory.push({ role: "user", content: question });
         conversationRounds = document.getElementById('rounds').value;
+
+        const promptUser = generatePrompt(conversationHistory, "user");
+        const userResponse = question; // User's question is already available
+        conversationHistory.push({ role: "user", content: userResponse });
 
         const promptBot1 = generatePrompt(conversationHistory, "bot1");
         const bot1Response = await getAssistantResponse("bot1", promptBot1);
         conversationHistory.push({ role: "assistant", content: bot1Response });
-        document.getElementById('botResponses').innerHTML +=
+        document.getElementById('botResponses').innerHTML += 
             `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
         textToSpeech(bot1Response, 'fa');
 
         const promptBot2 = generatePrompt(conversationHistory, "bot2");
         const bot2Response = await getAssistantResponse("bot2", promptBot2);
         conversationHistory.push({ role: "assistant", content: bot2Response });
-        document.getElementById('botResponses').innerHTML +=
+        document.getElementById('botResponses').innerHTML += 
             `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, 'fa');
 
         await alternateConversation();
-    }
-
-    async function getUserResponse() {
-        return new Promise(resolve => {
-            const userQuestion = document.getElementById('question').value;
-            document.getElementById('question').value = "";
-            resolve(userQuestion);
-        });
     }
 </script>
 </body>

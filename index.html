@@ -162,7 +162,7 @@
  return [{"role": "system", "content": systemMessage}].concat(conversation);
  }
 
-  async function getAssistantResponse(bot, messages) {
+ async function getAssistantResponse(bot, messages) {
  var url = "https://api.fireworks.ai/inference/v1/chat/completions";
  var model = (bot === "bot1") ? "accounts/fireworks/models/qwen2-72b-instruct" : "accounts/fireworks/models/llama-v3-70b-instruct";
  var payload = {
@@ -174,20 +174,23 @@
  "Content-Type": "application/json"
  };
  try {
- console.log("Sending request to API:", payload);
+ console.log('Sending request to API:', url);
+ console.log('Payload:', payload);
+ console.log('Headers:', headers);
  var response = await fetch(url, {
  method: 'POST',
  headers: headers,
  body: JSON.stringify(payload)
  });
+ console.log('Response status:', response.status);
  if (!response.ok) {
- throw new Error(`HTTP error! status: ${response.status}, statusText: ${response.statusText}`);
+ throw new Error(`HTTP error! status: ${response.status}`);
  }
  var data = await response.json();
- console.log("Received response from API:", data);
+ console.log('Response data:', data);
  return data.choices[0].message.content;
  } catch (error) {
- console.error("Error fetching assistant response:", error);
+ console.error('Error fetching response:', error);
  return "An error occurred while fetching the response.";
  }
  }

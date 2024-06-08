@@ -148,113 +148,88 @@
  let currentBot = "user";
  let conversationRounds = 10;
  const apiKeys = {
- "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
- "bot2": "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9"
- };
+        "qwen2-72b-instruct": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+        "llama-v3-70b-instruct": "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9"
+    };
 
- function generateBot1Prompt(conversation) {
- var systemMessage = "You are a highly intelligent assistant named bot1. You are engaged in a discussion with another assistant named bot2. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by bot2 in your response. Your response should not be more than 8192 tokens.";
- return [{"role": "system", "content": systemMessage}].concat(conversation);
- }
+    function generatePrompt(conversation, bot) {
+        const systemMessage = bot === "bot1" ?
+            "You are a highly intelligent assistant. Provide insightful and informative responses." :
+            "You are a critical thinker assistant. Analyze and respond thoughtfully and also answer questions in the same language as the user.";
+        return [{ role: "system", content: systemMessage }].concat(conversation);
+    }
 
- function generateBot2Prompt(conversation) {
- var systemMessage = "You are a critical thinker assistant named bot2. You are engaged in a discussion with another assistant named bot1. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by bot1 in your response. Your response should not be more than 8192 tokens.";
- return [{"role": "system", "content": systemMessage}].concat(conversation);
- }
+    async function getAssistantResponse(model, messages) {
+        const apiKey = apiKeys[model];
+        const url = "https://api.fireworks.ai/inference/v1/chat/completions";
+        const payload = {
+            model: `accounts/fireworks/models/${model}`,
+            messages: messages
+        };
+        const headers = {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json"
+        };
 
- async function getAssistantResponse(bot, messages) {
- var url = "https://api.fireworks.ai/inference/v1/chat/completions";
- var model = (bot === "bot1") ? "accounts/fireworks/models/qwen2-72b-instruct" : "accounts/fireworks/models/llama-v3-70b-instruct";
- var payload = {
- "model": model,
- "messages": messages
- };
- var headers = {
- "Authorization": "Bearer " + apiKeys[bot],
- "Content-Type": "application/json"
- };
- try {
- console.log('Sending request to API:', url);
- console.log('Payload:', payload);
- console.log('Headers:', headers);
- var response = await fetch(url, {
- method: 'POST',
- headers: headers,
- body: JSON.stringify(payload)
- });
- console.log('Response status:', response.status);
- if (!response.ok) {
- throw new Error(`HTTP error! status: ${response.status}`);
- }
- var data = await response.json();
- console.log('Response data:', data);
- return data.choices[0].message.content;
- } catch (error) {
- console.error('Error fetching response:', error);
- return "An error occurred while fetching the response.";
- }
- }
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            return data.choices[0].message.content;
+        } catch (error) {
+            console.error(error);
+            return "An error occurred while fetching the response.";
+        }
+    }
 
- function textToSpeech(text, lang) {
- var utterance = new SpeechSynthesisUtterance();
- utterance.text = text;
- utterance.lang = lang;
- speechSynthesis.speak(utterance);
- }
+    function textToSpeech(text, lang) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        speechSynthesis.speak(utterance);
+    }
 
- async function alternateConversation() {
- for (var i = 0; i < conversationRounds; i++) {
- if (currentBot === "bot1") {
- var prompt = generateBot1Prompt(conversationHistory);
- var botResponse = await getAssistantResponse("bot1", prompt);
- conversationHistory.push({"role": "assistant", "content": botResponse});
- setTimeout(() => {
- document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${botResponse}</p></div>`;
- textToSpeech(botResponse, 'en');
- }, (i * 2000) + 2000); // 2-second delay after each response
- currentBot = "bot2";
- } else {
- var prompt = generateBot2Prompt(conversationHistory);
- var botResponse = await getAssistantResponse("bot2", prompt);
- conversationHistory.push({"role": "assistant", "content": botResponse});
- setTimeout(() => {
- document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
- textToSpeech(botResponse, 'en');
- }, (i * 2000) + 2000); // 2-second delay after each response
- currentBot = "bot1";
- }
- }
- document.getElementById('loading-indicator').style.display = 'none';
- }
+    async function alternateConversation() {
+        for (let i = 0; i < conversationRounds; i++) {
+            const bot = currentBot === "bot1" ? "qwen2-72b-instruct" : "llama-v3-70b-instruct";
+            const prompt = generatePrompt(conversationHistory, currentBot);
+            const botResponse = await getAssistantResponse(bot, prompt);
+            conversationHistory.push({ role: "assistant", content: botResponse });
 
- async function askQuestion() {
- var question = document.getElementById('question').value;
- conversationRounds = parseInt(document.getElementById('rounds').value);
+            setTimeout(() => {
+                document.getElementById('botResponses').innerHTML += 
+                    `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+                textToSpeech(botResponse, 'fa');
+            }, (i * 1000) + 1000);
 
- if (!question) {
- alert("Please enter a question.");
- return;
- }
+            currentBot = currentBot === "bot1" ? "bot2" : "bot1";
+        }
+    }
 
- document.getElementById('loading-indicator').style.display = 'block';
- conversationHistory.push({"role": "user", "content": question});
+    async function askQuestion() {
+        const question = document.getElementById('question').value;
+        conversationHistory.push({ role: "user", content: question });
+        conversationRounds = document.getElementById('rounds').value;
 
- var prompt = generateBot1Prompt(conversationHistory);
- var bot1Response = await getAssistantResponse("bot1", prompt);
- conversationHistory.push({"role": "assistant", "content": bot1Response});
-  document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
- textToSpeech(bot1Response, 'en');
+        const promptBot1 = generatePrompt(conversationHistory, "bot1");
+        const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1);
+        conversationHistory.push({ role: "assistant", content: bot1Response });
+        document.getElementById('botResponses').innerHTML += 
+            `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+        textToSpeech(bot1Response, 'fa');
 
- conversationHistory.push({"role": "user", "content": bot1Response});
- var prompt = generateBot2Prompt(conversationHistory);
- var bot2Response = await getAssistantResponse("bot2", prompt);
- conversationHistory.push({"role": "assistant", "content": bot2Response});
- document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
- textToSpeech(bot2Response, 'en');
+        conversationHistory.push({ role: "user", content: bot1Response });
+        const promptBot2 = generatePrompt(conversationHistory, "bot2");
+        const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2);
+        conversationHistory.push({ role: "assistant", content: bot2Response });
+        document.getElementById('botResponses').innerHTML += 
+            `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+        textToSpeech(bot2Response, 'fa');
 
- await alternateConversation();
- document.getElementById('loading-indicator').style.display = 'none';
- }
- </script>
+        await alternateConversation();
+    }
+</script>
 </body>
 </html>

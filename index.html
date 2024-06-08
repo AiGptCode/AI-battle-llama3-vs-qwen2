@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>AI Battle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,6 +54,7 @@
             box-sizing: border-box;
             font-size: 20px;
             line-height: 1.8;
+            animation: fadeIn 1s;
         }
         .bot1-response {
             background-color: #e6f7ff;
@@ -88,12 +90,29 @@
                 width: 60%;
             }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .description {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        @media screen and (max-width: 600px) {
+            .description {
+                font-size: 16px;
+            }
+        }
     </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="top-bar">
         <h1>AI Battle</h1>
     </div>
+    <div class="description">Welcome to our AI Battle! Ask a question and let our two AI models battle it out.</div>
     <div class="main-section">
         <div style="display: flex; align-items: center;">
             <input type="text" id="question" placeholder="Ask a question...">
@@ -101,7 +120,6 @@
         </div>
         <div id="botResponses"></div>
     </div>
-
     <script>
         var conversationHistory = [];
         var currentBot = "bot1";

@@ -150,28 +150,29 @@
         }
 
         async function alternateConversation() {
-            for (var i = 0; i < conversationRounds; i++) {
-                if (currentBot === "bot1") {
-                    var prompt = generatePrompt(conversationHistory, "bot1");
-                    var botResponse = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
-                    conversationHistory.push({"role": "assistant", "content": botResponse});
-                    setTimeout(() => {
-                        document.getElementById('bot1Response').textContent = botResponse;
-                        textToSpeech(botResponse, 'en');
-                    }, (i * 2000) + 2000); // 2-second delay after each response
-                    currentBot = "bot2";
-                } else {
-                    var prompt = generatePrompt(conversationHistory, "bot2");
-                    var botResponse = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
-                    conversationHistory.push({"role": "assistant", "content": botResponse});
-                    setTimeout(() => {
-                        document.getElementById('bot2Response').textContent = botResponse;
-                        textToSpeech(botResponse, 'en');
-                    }, (i * 2000) + 2000); // 2-second delay after each response
-                    currentBot = "bot1";
-                }
-            }
+    for (var i = 0; i < conversationRounds; i++) {
+        if (currentBot === "bot1") {
+            var prompt = generatePrompt(conversationHistory, "bot1");
+            var botResponse = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
+            conversationHistory.push({"role": "assistant", "content": botResponse});
+            setTimeout(() => {
+                document.getElementById('bot1Response').innerHTML += `<p>${botResponse}</p>`;
+                textToSpeech(botResponse, 'en');
+            }, (i * 2000) + 2000); // 2-second delay after each response
+            currentBot = "bot2";
+        } else {
+            var prompt = generatePrompt(conversationHistory, "bot2");
+            var botResponse = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
+            conversationHistory.push({"role": "assistant", "content": botResponse});
+            setTimeout(() => {
+                document.getElementById('bot2Response').innerHTML += `<p>${botResponse}</p>`;
+                textToSpeech(botResponse, 'en');
+            }, (i * 2000) + 2000); // 2-second delay after each response
+            currentBot = "bot1";
         }
+    }
+}
+
 
         async function askQuestion() {
             var question = document.getElementById('question').value;

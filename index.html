@@ -10,8 +10,8 @@
             font-family: 'Orbitron', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #0a0a0a;
-            color: #fff;
+            background-color: #292929;
+            color: #D35400;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -25,68 +25,77 @@
             padding: 20px;
             text-align: center;
             width: 100%;
-            font-size: 24px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 28px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .top-bar h1 {
+            margin: 0;
+        }
+
+        .top-bar img {
+            max-width: 60%;
+            height: auto;
+            position: center;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-0%);
         }
 
         .main-section {
             max-width: 800px;
             margin: 20px auto;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            background-color: #333;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             width: 90%;
             border-radius: 10px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #333 #f0f0f0;
+            scrollbar-color: #ccc #f0f0f0;
         }
 
-‎        . /* تنظیمات پایه برای هر پاسخ */
-bot-response {
-    margin: 20px 0;
-    padding: 20px;
-    border-radius: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 14px;
-    line-height: 1.8;
-    animation: fadeIn 1s;
-    color: #000; /* افزودن رنگ فونت مشکی */
-}
+        .bot-response {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.8;
+            animation: fadeIn 1s;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
 
-/* تنظیمات پاسخ های bot1 */
-.bot1-response {
-    background-color: #ff6f61;
-    border: 1px solid #333;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-    color: #000; /* افزودن رنگ فونت مشکی */
-}
+        .bot1-response {
+            background-color: #ffddc1;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-/* تنظیمات پاسخ های bot2 */
-.bot2-response {
-    background-color: #5cdb95;
-    border: 1px solid #333;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-    color: #000; /* افزودن رنگ فونت مشکی */
-}
+        .bot2-response {
+            background-color: #c1ffd7;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
         #question {
             padding: 15px;
             margin-right: 10px;
-            border: 1px solid #333;
+            border: 1px solid #ccc;
             border-radius: 10px;
             width: 70%;
             box-sizing: border-box;
             font-size: 18px;
-            color: #000;
+            color: #333;
             background-color: #fff;
         }
 
         button {
             padding: 15px;
-            background-color: #333;
+            background-color: #444;
             color: #ffd700;
             border: none;
             border-radius: 10px;
@@ -103,15 +112,17 @@ bot-response {
         }
 
         ::-webkit-scrollbar-thumb {
-            background-color: #333;
+            background-color: #ccc;
             border-radius: 20px;
             border: 3px solid #f0f0f0;
         }
     </style>
 </head>
 <body>
+
 <div class="top-bar">
     <h1>AI Battle</h1>
+    <img src="https://raw.githubusercontent.com/AiGptCode/t/main/IMG_4113.png" alt="AI Battle Logo">
 </div>
 <div class="description">Welcome to our AI Battle! Ask a question and let our two AI models battle it out.</div>
 <div class="main-section">
@@ -121,44 +132,46 @@ bot-response {
     </div>
     <div>
         <label for="rounds">Select number of rounds:</label>
-        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">    </div>
+        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
+    </div>
     <div id="botResponses"></div>
 </div>
 <script>
     let conversationHistory = [];
-    let currentBot = "bot1";
+    let currentBot = "user";
     let conversationRounds = 10;
     const apiKeys = {
-        "qwen2-72b-instruct": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
-        "llama-v3-70b-instruct": "A3JblNQmMhD6DjacoCK5ghFJiAYsmd0tx46SC2tKgNIAW6j9"
+        "bot1": "QAwsdCAvRsIaGhoJQvXqfwNkwuDj7D1MyGqldWn07GV068cq",
+        "bot2": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
     };
 
-    function generatePrompt(conversation, bot) {
-        const systemMessage = bot === "bot1" ?
-            "You are a highly intelligent assistant. Provide insightful and informative responses." :
-            "You are a critical thinker assistant. Analyze and respond thoughtfully and also answer questions in the same language as the user.";
-        return [{ role: "system", content: systemMessage }].concat(conversation);
+    function generateBot1Prompt(conversation) {
+        var systemMessage = "You are a highly intelligent assistant named bot1. You are engaged in a discussion with another assistant named bot2. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by bot2 in your response. Your response should not be more than 8192 tokens.";
+        return [{"role": "system", "content": systemMessage}].concat(conversation);
+    }
+
+    function generateBot2Prompt(conversation) {
+        var systemMessage = "You are a critical thinker assistant named bot2. You are engaged in a discussion with another assistant named bot1. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by bot1 in your response. Your response should not be more than 8192 tokens.";
+        return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 
     async function getAssistantResponse(model, messages) {
-        const apiKey = apiKeys[model];
-        const url = "https://api.fireworks.ai/inference/v1/chat/completions";
-        const payload = {
-            model: `accounts/fireworks/models/${model}`,
-            messages: messages
+        var url = "https://api.fireworks.ai/inference/v1/chat/completions";
+        var payload = {
+            "model": model,
+            "messages": messages
         };
-        const headers = {
-            "Authorization": `Bearer ${apiKey}`,
+        var headers = {
+            "Authorization": "Bearer moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
             "Content-Type": "application/json"
         };
-
         try {
-            const response = await fetch(url, {
+            var response = await fetch(url, {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify(payload)
             });
-            const data = await response.json();
+            var data = await response.json();
             return data.choices[0].message.content;
         } catch (error) {
             console.error(error);
@@ -167,49 +180,54 @@ bot-response {
     }
 
     function textToSpeech(text, lang) {
-        const utterance = new SpeechSynthesisUtterance(text);
+        var utterance = new SpeechSynthesisUtterance();
+        utterance.text = text;
         utterance.lang = lang;
         speechSynthesis.speak(utterance);
     }
 
     async function alternateConversation() {
-        for (let i = 0; i < conversationRounds; i++) {
-            const bot = currentBot === "bot1" ? "qwen2-72b-instruct" : "llama-v3-70b-instruct";
-            const prompt = generatePrompt(conversationHistory, currentBot);
-            const botResponse = await getAssistantResponse(bot, prompt);
-            conversationHistory.push({ role: "assistant", content: botResponse });
-
-            setTimeout(() => {
-                document.getElementById('botResponses').innerHTML += 
-                    `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
-                textToSpeech(botResponse, 'fa');
-            }, (i * 2000) + 2000);
-
-            currentBot = currentBot === "bot1" ? "bot2" : "bot1";
+        for (var i = 0; i < conversationRounds; i++) {
+            if (currentBot === "bot1") {
+                var prompt = generateBot1Prompt(conversationHistory);
+                var botResponse = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
+                conversationHistory.push({"role": "assistant", "content": botResponse});
+                setTimeout(() => {
+                    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${botResponse}</p></div>`;
+                    textToSpeech(botResponse, 'en');
+                }, (i * 2000) + 2000); // 2-second delay after each response
+                currentBot = "bot2";
+            } else {
+                var prompt = generateBot2Prompt(conversationHistory);
+                var botResponse = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
+                conversationHistory.push({"role": "assistant", "content": botResponse});
+                setTimeout(() => {
+                    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
+                    textToSpeech(botResponse, 'en');
+                }, (i * 2000) + 2000); // 2-second delay after each response
+                currentBot = "bot1";
+            }
         }
     }
 
     async function askQuestion() {
-        const question = document.getElementById('question').value;
-        conversationHistory.push({ role: "user", content: question });
-        conversationRounds = document.getElementById('rounds').value;
+        var question = document.getElementById('question').value;
+        conversationHistory.push({"role": "user", "content": question});
 
-        const promptBot1 = generatePrompt(conversationHistory, "bot1");
-        const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1);
-        conversationHistory.push({ role: "assistant", content: bot1Response });
-        document.getElementById('botResponses').innerHTML += 
-            `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+        var prompt = generateBot1Prompt(conversationHistory);
+        var bot1Response = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
+        conversationHistory.push({"role": "assistant", "content": bot1Response});
+        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
         textToSpeech(bot1Response, 'en');
 
-        conversationHistory.push({ role: "user", content: bot1Response });
-        const promptBot2 = generatePrompt(conversationHistory, "bot2");
-        const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2);
-        conversationHistory.push({ role: "assistant", content: bot2Response });
-        document.getElementById('botResponses').innerHTML += 
-            `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+        conversationHistory.push({"role": "user", "content": bot1Response});
+        prompt = generateBot2Prompt(conversationHistory);
+        var bot2Response = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
+        conversationHistory.push({"role": "assistant", "content": bot2Response});
+        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, 'en');
 
-        await alternateConversation();
+        alternateConversation();
     }
 </script>
 </body>

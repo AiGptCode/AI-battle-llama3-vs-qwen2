@@ -138,7 +138,7 @@
 </div>
 <script>
     let conversationHistory = [];
-    let currentBot = "bot1";
+    let currentBot = "user";
     let conversationRounds = 10;
     const apiKeys = {
         "qwen2-72b-instruct": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
@@ -185,11 +185,16 @@
 
     async function alternateConversation() {
         for (let i = 0; i < conversationRounds; i++) {
-            const bot = currentBot === "bot1" ? "bot2" : "bot1";
             const prompt = generatePrompt(conversationHistory, currentBot);
-            const apiKey = apiKeys[currentBot];
-            const botResponse = await getAssistantResponse(currentBot, prompt, apiKey);
-            conversationHistory.push({ role: "assistant", content: botResponse });
+            let botResponse;
+            if (currentBot === "user") {
+                botResponse = await getUserResponse();
+                conversationHistory.push({ role: "user", content: botResponse });
+            } else {
+                const apiKey = apiKeys[currentBot];
+                botResponse = await getAssistantResponse(currentBot, prompt, apiKey);
+                conversationHistory.push({ role: "assistant", content: botResponse });
+            }
 
             setTimeout(() => {
                 document.getElementById('botResponses').innerHTML +=
@@ -197,33 +202,27 @@
                 textToSpeech(botResponse, 'fa');
             }, (i * 1000) + 1000);
 
-            currentBot = bot;
+            if (currentBot === "user") {
+                currentBot = "bot1";
+            } else if (currentBot === "bot1") {
+                currentBot = "bot2";
+            } else {
+                currentBot = "bot1";
+            }
         }
     }
 
     async function askQuestion() {
-        const question = document.getElementById('question').value;
-        conversationHistory.push({ role: "user", content: question });
         conversationRounds = document.getElementById('rounds').value;
-
-        const promptBot1 = generatePrompt(conversationHistory, "bot1");
-        const apiKeyBot1 = apiKeys["qwen2-72b-instruct"];
-        const bot1Response = await getAssistantResponse("qwen2-72b-instruct", promptBot1, apiKeyBot1);
-        conversationHistory.push({ role: "assistant", content: bot1Response });
-        document.getElementById('botResponses').innerHTML +=
-            `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-        textToSpeech(bot1Response, 'fa');
-
-        conversationHistory.push({ role: "user", content: bot1Response });
-        const promptBot2 = generatePrompt(conversationHistory, "bot2");
-        const apiKeyBot2 = apiKeys["llama-v3-70b-instruct"];
-        const bot2Response = await getAssistantResponse("llama-v3-70b-instruct", promptBot2, apiKeyBot2);
-        conversationHistory.push({ role: "assistant", content: bot2Response });
-        document.getElementById('botResponses').innerHTML +=
-            `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-        textToSpeech(bot2Response, 'fa');
-
         await alternateConversation();
+    }
+
+    async function getUserResponse() {
+        return new Promise(resolve => {
+            const userQuestion = document.getElementById('question').value;
+            document.getElementById('question').value = "";
+            resolve(userQuestion);
+        });
     }
 </script>
 </body>

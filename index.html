@@ -217,7 +217,7 @@
             setTimeout(() => {
                 document.getElementById('botResponses').innerHTML +=
                     `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
-                textToSpeech(botResponse, 'fa');
+                textToSpeech(botResponse, 'en');
             }, (i * 1000) + 1000);
 
             if (currentBot === "user") {

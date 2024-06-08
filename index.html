@@ -5,90 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-        body {
-            font-family: 'Orbitron', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        .top-bar {
-            background-color: #333;
-            color: #ffd700;
-            padding: 20px;
-            text-align: center;
-            width: 100%;
-            font-size: 24px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        .main-section {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-            width: 90%;
-            border-radius: 10px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #333 #f0f0f0;
-        }
-        .main-section::-webkit-scrollbar {
-            width: 12px;
-        }
-        .main-section::-webkit-scrollbar-track {
-            background: #f0f0f0;
-        }
-        .main-section::-webkit-scrollbar-thumb {
-            background-color: #333;
-            border-radius: 20px;
-            border: 3px solid #f0f0f0;
-        }
-        .bot-response {
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-            box-sizing: border-box;
-            font-size: 12px;
-            line-height: 1.8;
-            animation: fadeIn 1s;
-        }
-        .bot1-response {
-            background-color: rgba(255, 223, 0, 0.6);
-            border: 1px solid #333;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-        }
-        .bot2-response {
-            background-color: rgba(255, 127, 0, 0.6);
-            border: 1px solid #333;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-        }
-        #question {
-            padding: 15px;
-            margin-right: 10px;
-            border: 1px solid #333;
-            border-radius: 10px;
-            width: 70%;
-            box-sizing: border-box;
-            font-size: 18px;
-            color: #fff;
-            background-color: rgba(0, 0, 255, 0.3);
-        }
-        button {
-            padding: 15px;
-            background-color: #333;
-            color: #ffd700;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 18px;
-        }
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #333; /* Changed background color for better contrast */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.top-bar {
+    background-color: #222; /* Darkened the top bar background */
+    color: #ffd700;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    font-size: 24px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.main-section {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #444; /* Changed background color for better contrast */
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    width: 90%;
+    border-radius: 10px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #333 #f0f0f0;
+}
+
+.main-section::-webkit-scrollbar {
+    width: 12px;
+}
+
+.main-section::-webkit-scrollbar-track {
+    background: #f0f0f0;
+}
+
+.main-section::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 20px;
+    border: 3px solid #f0f0f0;
+}
+
+.bot-response {
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 12px;
+    line-height: 1.8;
+    animation: fadeIn 1s;
+}
+
+.bot1-response {
+    background-color: #ffdf00; /* Changed to flat yellow */
+    border: 1px solid #333;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.bot2-response {
+    background-color: #ff7f00; /* Changed to flat orange */
+    border: 1px solid #333;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+#question {
+    padding: 15px;
+    margin-right: 10px;
+    border: 1px solid #fff; /* Changed border color to white for contrast */
+    border-radius: 10px;
+    width: 70%;
+    box-sizing: border-box;
+    font-size: 18px;
+    color: #fff; /* Changed text color to white for better visibility */
+    background-color: #fff; /* Changed background color to white */
+}
+
+button {
+    padding: 15px;
+    background-color: #ffd700; /* Changed to flat gold */
+    color: #333; /* Changed text color for better contrast */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+}
     </style>
 </head>
 <body>

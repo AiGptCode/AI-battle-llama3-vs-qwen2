@@ -176,6 +176,9 @@
 
     // Function to make API call for each bot
     async function getBotResponse(botName, messages) {
+        console.log("Bot name:", botName); // Debug statement
+        console.log("Messages:", messages); // Debug statement
+
         const url = "https://api.fireworks.ai/inference/v1/completions";
         const settings = setBotSettings(botName);
         const apiKey = getApiKey(botName);
@@ -202,6 +205,7 @@
                 headers: headers,
                 body: JSON.stringify(payload)
             });
+            console.log("API response:", response); // Debug statement
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -211,66 +215,67 @@
             }
             return data.choices[0].message.content;
         } catch (error) {
-            console.error(error);
-            return "An error occurred while fetching the response.";
+            console.error(error);        return "An error occurred while fetching the response.";
+    }
+}
+
+// Function to set the API key for each bot
+function getApiKey(botName) {
+    const apiKeys = {
+        "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+        "bot2": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
+    };
+    return apiKeys[botName];
+}
+
+function textToSpeech(text, lang) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    speechSynthesis.speak(utterance);
+}
+
+async function alternateConversation() {
+    for (let i = 0; i < conversationRounds; i++) {
+        const prompt = generatePrompt(conversationHistory, currentBot);
+        let botResponse;
+        if (currentBot === "user") {
+            botResponse = await getUserResponse();
+            conversationHistory.push({ role: "user", content: botResponse });
+        } else {
+            botResponse = await getBotResponse(currentBot, prompt); // Use getBotResponse instead
+            conversationHistory.push({ role: "assistant", content: botResponse });
+        }
+
+        setTimeout(() => {
+            document.getElementById('botResponses').innerHTML +=
+                `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
+            textToSpeech(botResponse, 'fa');
+        }, (i * 1000) + 1000);
+
+        if (currentBot === "user") {
+            currentBot = "bot1";
+        } else if (currentBot === "bot1") {
+            currentBot = "bot2";
+        } else {
+            currentBot = "bot1";
         }
     }
+}
 
-    // Function to set the API key for each bot
-    function getApiKey(botName) {
-        const apiKeys = {
-            "bot1": "moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
-            "bot2": "JTRQEsG1GBFLEqoy9SJBrTj7svzH13wgkHYt0hRF2lIpxEjS"
-        };
-        return apiKeys[botName];
-    }
+async function askQuestion() {
+    console.log("Ask button clicked"); // Debug statement
+    conversationRounds = document.getElementById('rounds').value;
+    await alternateConversation();
+}
 
-    function textToSpeech(text, lang) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        speechSynthesis.speak(utterance);
-    }
+async function getUserResponse() {
+    return new Promise(resolve => {
+        const userQuestion = document.getElementById('question').value;
+        document.getElementById('question').value = "";
+        resolve(userQuestion);
+    });
+}
 
-    async function alternateConversation() {
-        for (let i = 0; i < conversationRounds; i++) {
-            const prompt = generatePrompt(conversationHistory, currentBot);
-            let botResponse;
-            if (currentBot === "user") {
-                botResponse = await getUserResponse();
-                conversationHistory.push({ role: "user", content: botResponse });
-            } else {
-                botResponse = await getBotResponse(currentBot, prompt); // Use getBotResponse instead
-                conversationHistory.push({ role: "assistant", content: botResponse });
-            }
-
-            setTimeout(() => {
-                document.getElementById('botResponses').innerHTML +=
-                    `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
-                textToSpeech(botResponse, 'fa');
-            }, (i * 1000) + 1000);
-
-            if (currentBot === "user") {
-                currentBot = "bot1";
-            } else if (currentBot === "bot1") {
-                currentBot = "bot2";
-            } else {
-                currentBot = "bot1";
-            }
-        }
-    }
-
-    async function askQuestion() {
-        conversationRounds = document.getElementById('rounds').value;
-        await alternateConversation();
-    }
-
-    async function getUserResponse() {
-        return new Promise(resolve => {
-            const userQuestion = document.getElementById('question').value;
-            document.getElementById('question').value = "";
-            resolve(userQuestion);
-        });
-    }
 </script>
 </body>
 </html>

@@ -210,49 +210,41 @@
         speechSynthesis.speak(utterance);
     }
 
-    async function alternateConversation() {
-        for (var i = 0; i < conversationRounds; i++) {
-            if (currentBot === "bot1") {
-                var prompt = generateBot1Prompt(conversationHistory);
-                var botResponse = await getAssistantResponse("bot1", prompt);
-                conversationHistory.push({"role": "assistant", "content": botResponse});
-                setTimeout(() => {
-                    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${botResponse}</p></div>`;
-                    textToSpeech(botResponse, 'en');
-                }, (i * 2000) + 2000); // 2-second delay after each response
-                currentBot = "bot2";
-            } else {
-                var prompt = generateBot2Prompt(conversationHistory);
-                var botResponse = await getAssistantResponse("bot2", prompt);
-                conversationHistory.push({"role": "assistant", "content": botResponse});
-                setTimeout(() => {
-                    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
-                    textToSpeech(botResponse, 'en');
-                }, (i * 2000) + 2000); // 2-second delay after each response
-                currentBot = "bot1";
-            }
-        }
-    }
-
     async function askQuestion() {
-        var question = document.getElementById('question').value;
-        conversationHistory.push({"role": "user", "content": question});
+    var question = document.getElementById('question').value;
+    conversationHistory.push({"role": "user", "content": question});
 
-        var prompt = generateBot1Prompt(conversationHistory);
-        var bot1Response = await getAssistantResponse("bot1", prompt);
-        conversationHistory.push({"role": "assistant", "content": bot1Response});
-        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
-        textToSpeech(bot1Response, 'en');
+    var prompt = generateBot1Prompt(conversationHistory);
+    var bot1Response = await getAssistantResponse("bot1", prompt);
+    conversationHistory.push({"role": "assistant", "content": bot1Response});
+    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+    textToSpeech(bot1Response, 'en');
 
-        conversationHistory.push({"role": "user", "content": bot1Response});
-        prompt = generateBot2Prompt(conversationHistory);
-        var bot2Response = await getAssistantResponse("bot2", prompt);
-        conversationHistory.push({"role": "assistant", "content": bot2Response});
+    alternateConversation();
+}
+
+async function alternateConversation() {
+    var prompt = generateBot2Prompt(conversationHistory);
+    var bot2Response = await getAssistantResponse("bot2", prompt);
+    conversationHistory.push({"role": "assistant", "content": bot2Response});
+    setTimeout(() => {
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, 'en');
+    }, 2000); // 2-second delay before bot2 responds
 
+    prompt = generateBot1Prompt(conversationHistory);
+    var bot1Response = await getAssistantResponse("bot1", prompt);
+    conversationHistory.push({"role": "assistant", "content": bot1Response});
+    setTimeout(() => {
+        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+        textToSpeech(bot1Response, 'en');
+    }, 4000); // 2-second delay after bot2 responds before bot1 responds
+
+    // Continue alternating conversation
+    setTimeout(() => {
         alternateConversation();
-    }
+    }, 6000); // Wait 6 seconds before continuing the conversation
+}
 </script>
 </body>
 </html>

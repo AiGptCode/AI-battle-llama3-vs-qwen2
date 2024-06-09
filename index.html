@@ -165,12 +165,12 @@
     };
 
     function generateBot1Prompt(conversation) {
-        var systemMessage = "You are a highly intelligent assistant named qwen2. You are engaged in a discussion with another assistant named llama3. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by llama3 in your response. Your response should not be more than 1024 tokens and finally answer questions exactly same as user language,ask question.";
+        var systemMessage = "You are a highly intelligent assistant named qwen2. You are engaged in a discussion with another assistant named llama3. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by llama3 in your response and finally answer questions exactly same as user language,ask question.";
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 
     function generateBot2Prompt(conversation) {
-        var systemMessage = "You are a critical thinker assistant named llama3. You are engaged in a discussion with another assistant named qwen2. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by qwen2 in your response. Your response should not be more than 1024 tokens and finally answer questions exactly same as user language ,ask question.";
+        var systemMessage = "You are a critical thinker assistant named llama3. You are engaged in a discussion with another assistant named qwen2. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by qwen2 in your response and finally answer questions exactly same as user language ,ask question.";
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 

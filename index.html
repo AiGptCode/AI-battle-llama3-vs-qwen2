@@ -225,6 +225,9 @@ async function askQuestion() {
     setTimeout(() => {
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, 'en');
+        
+        // Continue the conversation
+        alternateConversation();
     }, 2000); // 2-second delay before Bot 2 responds
 }
 </script>

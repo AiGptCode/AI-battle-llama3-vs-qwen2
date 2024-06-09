@@ -37,8 +37,10 @@
         .top-bar img {
             max-width: 60%;
             height: auto;
-            display: block;
-            margin: 10px auto 0;
+            position: center;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-0%);
         }
 
         .main-section {
@@ -101,12 +103,6 @@
             font-size: 18px;
         }
 
-        .loading-indicator {
-            display: none;
-            font-size: 18px;
-            color: #ffd700;
-        }
-
         ::-webkit-scrollbar {
             width: 12px;
         }
@@ -139,143 +135,100 @@
         <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
     </div>
     <div id="botResponses"></div>
-    <div class="loading-indicator" id="loading-indicator">Loading...</div>
 </div>
 <script>
     let conversationHistory = [];
     let currentBot = "user";
     let conversationRounds = 10;
-
-    // Function to set the settings for each bot
-    function setBotSettings(botName) {
-        switch (botName) {
-            case "bot1":
-                return {
-                    model: "accounts/fireworks/models/qwen2-72b-instruct",
-                    max_tokens: 8192, // Set maximum tokens to 8192
-                    top_p: 1,
-                    top_k: 40,
-                    presence_penalty: 0,
-                    frequency_penalty: 0,
-                    temperature: 0.6
-                };
-            case "bot2":
-                return {
-                    model: "accounts/fireworks/models/llama-v3-70b-instruct",
-                    max_tokens: 8192, // Set maximum tokens to 8192
-                    top_p: 1,
-                    top_k: 40,
-                    presence_penalty: 0,
-                    frequency_penalty: 0,
-                    temperature: 0.6
-                };
-            default:
-                return null;
-        }
-    }
-
-    // Function to make API call for each bot
-    async function getBotResponse(botName, messages) {
-        console.log("Bot name:", botName); // Debug statement
-        console.log("Messages:", messages); // Debug statement
-
-        const url = "https://api.fireworks.ai/inference/v1/completions";
-        const settings = setBotSettings(botName);
-        const apiKey = getApiKey(botName);
-
-        if (!settings) {
-            console.error("Invalid bot name");
-            return "An error occurred while fetching the response.";
-        }
-
-        const payload = {
-            ...settings,
-            messages: messages
-        };
-
-        const headers = {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-        };
-
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(payload)
-            });
-            console.log("API response:", response); // Debug statement
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            if (!data.choices || !data.choices.length) {
-                throw new Error("No response from API");
-            }
-            return data.choices[0].message.content;
-        } catch (error) {
-            console.error(error);        return "An error occurred while fetching the response.";
-    }
-}
-
-// Function to set the API key for each bot
-function getApiKey(botName) {
     const apiKeys = {
         "bot1": "Aa0b4iHddGVZGMyRw2zurVVGPJhU2q2V1rHBO5dVAkUHconw",
         "bot2": "A3J4yMeDGJ81Xpc2o5S4GGNKJCoA2NxzILXD3gbZAx7fTXeG"
     };
-    return apiKeys[botName];
-}
 
-function textToSpeech(text, lang) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    speechSynthesis.speak(utterance);
-}
+    function generateBot1Prompt(conversation) {
+        var systemMessage = "You are a highly intelligent assistant named bot1. You are engaged in a discussion with another assistant named bot2. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by bot2 in your response. Your response should not be more than 8192 tokens.";
+        return [{"role": "system", "content": systemMessage}].concat(conversation);
+    }
 
-async function alternateConversation() {
-    for (let i = 0; i < conversationRounds; i++) {
-        const prompt = generatePrompt(conversationHistory, currentBot);
-        let botResponse;
-        if (currentBot === "user") {
-            botResponse = await getUserResponse();
-            conversationHistory.push({ role: "user", content: botResponse });
-        } else {
-            botResponse = await getBotResponse(currentBot, prompt); // Use getBotResponse instead
-            conversationHistory.push({ role: "assistant", content: botResponse });
-        }
+    function generateBot2Prompt(conversation) {
+        var systemMessage = "You are a critical thinker assistant named bot2. You are engaged in a discussion with another assistant named bot1. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by bot1 in your response. Your response should not be more than 8192 tokens.";
+        return [{"role": "system", "content": systemMessage}].concat(conversation);
+    }
 
-        setTimeout(() => {
-            document.getElementById('botResponses').innerHTML +=
-                `<div class="bot-response ${currentBot}-response"><p>${botResponse}</p></div>`;
-            textToSpeech(botResponse, 'fa');
-        }, (i * 1000) + 1000);
-
-        if (currentBot === "user") {
-            currentBot = "bot1";
-        } else if (currentBot === "bot1") {
-            currentBot = "bot2";
-        } else {
-            currentBot = "bot1";
+    async function getAssistantResponse(model, messages) {
+        var url = "https://api.fireworks.ai/inference/v1/chat/completions";
+        var payload = {
+            "model": model,
+            "messages": messages
+        };
+        var headers = {
+            "Authorization": "Bearer moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+            "Content-Type": "application/json"
+        };
+        try {
+            var response = await fetch(url, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(payload)
+            });
+            var data = await response.json();
+            return data.choices[0].message.content;
+        } catch (error) {
+            console.error(error);
+            return "An error occurred while fetching the response.";
         }
     }
-}
 
-async function askQuestion() {
-    console.log("Ask button clicked"); // Debug statement
-    conversationRounds = document.getElementById('rounds').value;
-    await alternateConversation();
-}
+    function textToSpeech(text, lang) {
+        var utterance = new SpeechSynthesisUtterance();
+        utterance.text = text;
+        utterance.lang = lang;
+        speechSynthesis.speak(utterance);
+    }
 
-async function getUserResponse() {
-    return new Promise(resolve => {
-        const userQuestion = document.getElementById('question').value;
-        document.getElementById('question').value = "";
-        resolve(userQuestion);
-    });
-}
+    async function alternateConversation() {
+        for (var i = 0; i < conversationRounds; i++) {
+            if (currentBot === "bot1") {
+                var prompt = generateBot1Prompt(conversationHistory);
+                var botResponse = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
+                conversationHistory.push({"role": "assistant", "content": botResponse});
+                setTimeout(() => {
+                    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${botResponse}</p></div>`;
+                    textToSpeech(botResponse, 'en');
+                }, (i * 2000) + 2000); // 2-second delay after each response
+                currentBot = "bot2";
+            } else {
+                var prompt = generateBot2Prompt(conversationHistory);
+                var botResponse = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
+                conversationHistory.push({"role": "assistant", "content": botResponse});
+                setTimeout(() => {
+                    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
+                    textToSpeech(botResponse, 'en');
+                }, (i * 2000) + 2000); // 2-second delay after each response
+                currentBot = "bot1";
+            }
+        }
+    }
 
+    async function askQuestion() {
+        var question = document.getElementById('question').value;
+        conversationHistory.push({"role": "user", "content": question});
+
+        var prompt = generateBot1Prompt(conversationHistory);
+        var bot1Response = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
+        conversationHistory.push({"role": "assistant", "content": bot1Response});
+        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+        textToSpeech(bot1Response, 'en');
+
+        conversationHistory.push({"role": "user", "content": bot1Response});
+        prompt = generateBot2Prompt(conversationHistory);
+        var bot2Response = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
+        conversationHistory.push({"role": "assistant", "content": bot2Response});
+        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+        textToSpeech(bot2Response, 'en');
+
+        alternateConversation();
+    }
 </script>
 </body>
 </html>

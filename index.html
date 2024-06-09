@@ -132,7 +132,7 @@
     </div>
     <div>
         <label for="rounds">Select number of rounds:</label>
-        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
+        <input type="number" id="rounds" name="rounds" min="1" max="30" value="10">
     </div>
     <div id="botResponses"></div>
 </div>
@@ -141,17 +141,17 @@
     let currentBot = "user";
     let conversationRounds = 10;
     const apiKeys = {
-        "bot1": "Aa0b4iHddGVZGMyRw2zurVVGPJhU2q2V1rHBO5dVAkUHconw",
-        "bot2": "A3J4yMeDGJ81Xpc2o5S4GGNKJCoA2NxzILXD3gbZAx7fTXeG"
+        "bot1": "A3J4yMeDGJ81Xpc2o5S4GGNKJCoA2NxzILXD3gbZAx7fTXeG",
+        "bot2": "Aa0b4iHddGVZGMyRw2zurVVGPJhU2q2V1rHBO5dVAkUHconw"
     };
 
     function generateBot1Prompt(conversation) {
-        var systemMessage = "You are a highly intelligent assistant named bot1. You are engaged in a discussion with another assistant named bot2. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by bot2 in your response. Your response should not be more than 8192 tokens.";
+        var systemMessage = "You are a highly intelligent assistant named bot1. You are engaged in a discussion with another assistant named bot2. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by bot2 in your response. Your response should not be more than 1024 tokens.";
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 
     function generateBot2Prompt(conversation) {
-        var systemMessage = "You are a critical thinker assistant named bot2. You are engaged in a discussion with another assistant named bot1. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by bot1 in your response. Your response should not be more than 8192 tokens.";
+        var systemMessage = "You are a critical thinker assistant named bot2. You are engaged in a discussion with another assistant named bot1. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by bot1 in your response. Your response should not be more than 1024 tokens.";
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 
@@ -162,7 +162,7 @@
             "messages": messages
         };
         var headers = {
-            "Authorization": "Bearer moIHUdyg3k6SNmc9hLjmDtI6OvI2vatseMoNP9fmByvcQiGM",
+            "Authorization": `Bearer ${apiKeys[model]}`,
             "Content-Type": "application/json"
         };
         try {
@@ -190,7 +190,7 @@
         for (var i = 0; i < conversationRounds; i++) {
             if (currentBot === "bot1") {
                 var prompt = generateBot1Prompt(conversationHistory);
-                var botResponse = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
+                var botResponse = await getAssistantResponse("bot1", prompt);
                 conversationHistory.push({"role": "assistant", "content": botResponse});
                 setTimeout(() => {
                     document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${botResponse}</p></div>`;
@@ -199,7 +199,7 @@
                 currentBot = "bot2";
             } else {
                 var prompt = generateBot2Prompt(conversationHistory);
-                var botResponse = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
+                var botResponse = await getAssistantResponse("bot2", prompt);
                 conversationHistory.push({"role": "assistant", "content": botResponse});
                 setTimeout(() => {
                     document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${botResponse}</p></div>`;
@@ -215,14 +215,14 @@
         conversationHistory.push({"role": "user", "content": question});
 
         var prompt = generateBot1Prompt(conversationHistory);
-        var bot1Response = await getAssistantResponse("accounts/fireworks/models/qwen2-72b-instruct", prompt);
+        var bot1Response = await getAssistantResponse("bot1", prompt);
         conversationHistory.push({"role": "assistant", "content": bot1Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
         textToSpeech(bot1Response, 'en');
 
         conversationHistory.push({"role": "user", "content": bot1Response});
         prompt = generateBot2Prompt(conversationHistory);
-        var bot2Response = await getAssistantResponse("accounts/fireworks/models/llama-v3-70b-instruct", prompt);
+        var bot2Response = await getAssistantResponse("bot2", prompt);
         conversationHistory.push({"role": "assistant", "content": bot2Response});
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
         textToSpeech(bot2Response, 'en');

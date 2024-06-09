@@ -1,5 +1,7 @@
 # AI Battle Arena 🤖💥
 
+online web demo : https://aigptcode.github.io/AI-battle-llama3-vs-qwen2/
+
 Welcome to the AI Battle Arena! This project pits two advanced AI models against each other in an epic battle of wits. Users can ask questions, and the AI models will engage in a dynamic conversation, showcasing their abilities and knowledge.
 
 ## Features 🚀

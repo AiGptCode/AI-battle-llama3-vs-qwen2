@@ -225,12 +225,26 @@ async function askQuestion() {
     document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
     textToSpeech(bot2Response, 'en');
     
-    // Bot 1 responds to Bot 2's last response
-    prompt = generateBot1Prompt(conversationHistory);
-    var bot1NextResponse = await getAssistantResponse("bot1", prompt);
-    conversationHistory.push({"role": "assistant", "content": bot1NextResponse});
-    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1NextResponse}</p></div>`;
-    textToSpeech(bot1NextResponse, 'en');
+    // Continue the conversation without user input
+    continueConversation();
+}
+
+async function continueConversation() {
+    var prompt = generateBot1Prompt(conversationHistory);
+    var bot1Response = await getAssistantResponse("bot1", prompt);
+    conversationHistory.push({"role": "assistant", "content": bot1Response});
+    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
+    textToSpeech(bot1Response, 'en');
+
+    // Bot 2 responds to Bot 1's last response
+    prompt = generateBot2Prompt(conversationHistory);
+    var bot2Response = await getAssistantResponse("bot2", prompt);
+    conversationHistory.push({"role": "assistant", "content": bot2Response});
+    document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+    textToSpeech(bot2Response, 'en');
+
+    // Continue the conversation recursively
+    continueConversation();
 }
 </script>
 </body>

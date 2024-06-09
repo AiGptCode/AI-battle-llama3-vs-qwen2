@@ -132,7 +132,7 @@
     </div>
     <div>
         <label for="rounds">Select number of rounds:</label>
-        <input type="number" id="rounds" name="rounds" min="1" max="30" value="10">
+        <input type="number" id="rounds" name="rounds" min="1" max="20" value="10">
     </div>
     <div id="botResponses"></div>
 </div>
@@ -145,24 +145,48 @@
         "bot2": "Aa0b4iHddGVZGMyRw2zurVVGPJhU2q2V1rHBO5dVAkUHconw"
     };
 
+    const modelSettings = {
+        "bot1": {
+            "model": "accounts/fireworks/models/qwen2-72b-instruct",
+            "temperature": 0.7,
+            "max_tokens": 8192,
+            "top_p": 0.9,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.6
+        },
+        "bot2": {
+            "model": "accounts/fireworks/models/llama-v3-70b-instruct",
+            "temperature": 0.7,
+            "max_tokens": 8192,
+            "top_p": 0.9,
+            "frequency_penalty": 0.0,
+            "presence_penalty": 0.6
+        }
+    };
+
     function generateBot1Prompt(conversation) {
-        var systemMessage = "You are a highly intelligent assistant named bot1. You are engaged in a discussion with another assistant named bot2. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by bot2 in your response. Your response should not be more than 1024 tokens.";
+        var systemMessage = "You are a highly intelligent assistant named bot1. You are engaged in a discussion with another assistant named bot2. Your goal is to provide the most accurate, insightful, and informative responses. You should also address the points made by bot2 in your response. Your response should not be more than 8192 tokens.";
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 
     function generateBot2Prompt(conversation) {
-        var systemMessage = "You are a critical thinker assistant named bot2. You are engaged in a discussion with another assistant named bot1. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by bot1 in your response. Your response should not be more than 1024 tokens.";
+        var systemMessage = "You are a critical thinker assistant named bot2. You are engaged in a discussion with another assistant named bot1. Your goal is to provide thoughtful, well-reasoned, and informative responses. You should also address the points made by bot1 in your response. Your response should not be more than 8192 tokens.";
         return [{"role": "system", "content": systemMessage}].concat(conversation);
     }
 
-    async function getAssistantResponse(model, messages) {
+    async function getAssistantResponse(bot, messages) {
         var url = "https://api.fireworks.ai/inference/v1/chat/completions";
         var payload = {
-            "model": model,
-            "messages": messages
+            "model": modelSettings[bot].model,
+            "messages": messages,
+            "temperature": modelSettings[bot].temperature,
+            "max_tokens": modelSettings[bot].max_tokens,
+            "top_p": modelSettings[bot].top_p,
+            "frequency_penalty": modelSettings[bot].frequency_penalty,
+            "presence_penalty": modelSettings[bot].presence_penalty
         };
         var headers = {
-            "Authorization": `Bearer ${apiKeys[model]}`,
+            "Authorization": `Bearer ${apiKeys[bot]}`,
             "Content-Type": "application/json"
         };
         try {

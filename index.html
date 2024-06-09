@@ -224,26 +224,28 @@
 }
 
 async function alternateConversation() {
-    var prompt = generateBot2Prompt(conversationHistory);
-    var bot2Response = await getAssistantResponse("bot2", prompt);
-    conversationHistory.push({"role": "assistant", "content": bot2Response});
-    setTimeout(() => {
-        document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
-        textToSpeech(bot2Response, 'en');
-    }, 2000); // 2-second delay before bot2 responds
-
-    prompt = generateBot1Prompt(conversationHistory);
+    // Bot 1 responds to Bot 2's last response
+    var prompt = generateBot1Prompt(conversationHistory);
     var bot1Response = await getAssistantResponse("bot1", prompt);
     conversationHistory.push({"role": "assistant", "content": bot1Response});
     setTimeout(() => {
         document.getElementById('botResponses').innerHTML += `<div class="bot-response bot1-response"><p>${bot1Response}</p></div>`;
         textToSpeech(bot1Response, 'en');
-    }, 4000); // 2-second delay after bot2 responds before bot1 responds
+        
+        // Bot 2 responds to Bot 1's last response
+        prompt = generateBot2Prompt(conversationHistory);
+        var bot2Response = await getAssistantResponse("bot2", prompt);
+        conversationHistory.push({"role": "assistant", "content": bot2Response});
+        setTimeout(() => {
+            document.getElementById('botResponses').innerHTML += `<div class="bot-response bot2-response"><p>${bot2Response}</p></div>`;
+            textToSpeech(bot2Response, 'en');
 
-    // Continue alternating conversation
-    setTimeout(() => {
-        alternateConversation();
-    }, 6000); // Wait 6 seconds before continuing the conversation
+            // Continue alternating the conversation
+            setTimeout(() => {
+                alternateConversation();
+            }, 2000); // 2-second delay before continuing the conversation
+        }, 2000); // 2-second delay before Bot 2 responds
+    }, 2000); // 2-second delay before Bot 1 responds
 }
 </script>
 </body>
